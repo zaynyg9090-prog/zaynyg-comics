@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Library — Zaynyg World Comics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b0b12">
+</head>
+<body>
+
+<nav class="nav"><div class="wrap nav-inner">
+  <a class="brand" href="index.html"><span class="zap">⚡</span> ZAYNYG WORLD COMICS</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="library.html" class="active">Library</a>
+    <a href="reader.html">Read Free</a>
+    <a href="store.html">Store</a>
+  </div>
+</div></nav>
+
+<section class="section"><div class="wrap">
+  <div class="section-head"><h2>📚 The Library</h2></div>
+  <p style="color:var(--muted);margin:-14px 0 22px;max-width:40em">Every universe in the Zaynyg multiverse. Start with a free Issue #0 — then stick around for the full runs as they drop.</p>
+  <div class="filters" id="filters"></div>
+  <div class="shelf" id="library-shelf"></div>
+
+  <div id="series-detail" style="margin-top:44px"></div>
+</div></section>
+
+<footer><div class="wrap">
+  <div><strong>⚡ ZAYNYG WORLD COMICS</strong><br>Original comics &amp; superheroes by Zaynyg World.</div>
+  <div>© 2026 Zaynyg World. All rights reserved.</div>
+</div></footer>
+
+<script src="data.js"></script>
+<script>
+const shelf = document.getElementById('library-shelf');
+const filters = document.getElementById('filters');
+const detail = document.getElementById('series-detail');
+const genres = ['All', ...new Set(window.ZAYNYG_SERIES.map(s=>s.genre))];
+let active = 'All';
+
+function badge(s){
+  if(!s.badge) return '';
+  const cls = s.status==='free' ? 'free' : s.status==='soon' ? 'soon' : '';
+  return `<span class="badge ${cls}">${s.badge}</span>`;
+}
+function renderShelf(){
+  const list = window.ZAYNYG_SERIES.filter(s=>active==='All'||s.genre===active);
+  shelf.innerHTML = list.map(s=>`
+    <a class="card" href="#${s.id}" data-id="${s.id}">${badge(s)}
+      <img src="${s.cover}" alt="${s.title} cover art" loading="lazy">
+      <div class="card-body"><h3>${s.title}</h3><div class="card-meta">${s.genre} • ${s.audience}</div></div>
+    </a>`).join('');
+}
+function renderDetail(id){
+  const s = window.ZAYNYG_SERIES.find(x=>x.id===id);
+  if(!s){ detail.innerHTML=''; return; }
+  const cta = s.id==='star-clash'
+    ? `<a class="btn btn-gold" href="reader.html">⚡ Read Issue #0 Free</a>`
+    : `<a class="btn btn-gold" href="store.html">View in Store</a>`;
+  detail.innerHTML = `
+    <div class="issue" style="align-items:start">
+      <img src="${s.cover}" alt="${s.title} cover art">
+      <div>
+        <h3 class="display" style="font-size:2rem">${s.title}</h3>
+        <div class="meta">${s.genre} • ${s.audience} • ${s.issues} issue${s.issues>1?'s':''} planned</div>
+        <p style="margin-bottom:18px;max-width:36em">${s.blurb}</p>
+        ${cta} <a class="btn btn-ghost" href="library.html" style="margin-left:12px">← All series</a>
+      </div>
+    </div>`;
+  detail.scrollIntoView({behavior:'smooth', block:'start'});
+}
+filters.innerHTML = genres.map(g=>`<button class="chip ${g==='All'?'on':''}" data-g="${g}">${g}</button>`).join('');
+filters.addEventListener('click', e=>{
+  const b = e.target.closest('.chip'); if(!b) return;
+  active = b.dataset.g;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on', c===b));
+  renderShelf();
+});
+shelf.addEventListener('click', e=>{
+  const c = e.target.closest('.card'); if(!c) return;
+  e.preventDefault();
+  history.replaceState(null,'','#'+c.dataset.id);
+  renderDetail(c.dataset.id);
+});
+renderShelf();
+if(location.hash) renderDetail(location.hash.slice(1));
+</script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zaynyg World Comics — Original Comics, Straight From the Source</title>
+<meta name="description" content="Zaynyg World Comics: the home of STAR CLASH, Glitch Kids, Emberfall, North Park and more. Original comics and superheroes by Zaynyg World.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<meta name="theme-color" content="#0b0b12">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="nav"><div class="wrap nav-inner">
+  <a class="brand" href="index.html"><span class="zap">⚡</span> ZAYNYG WORLD COMICS</a>
+  <div class="nav-links">
+    <a href="index.html" class="active">Home</a>
+    <a href="library.html">Library</a>
+    <a href="reader.html">Read Free</a>
+    <a href="store.html">Store</a>
+  </div>
+</div></nav>
+
+<header class="hero">
+  <div class="hero-bg"></div><div class="hero-shade"></div>
+  <div class="wrap hero-content">
+    <span class="kicker">100% Original Universes</span>
+    <h1>YOUR NEW<br><span class="gold">COMIC OBSESSION</span><br>STARTS HERE.</h1>
+    <p>STAR CLASH. Glitch Kids. Emberfall. North Park. Shell Shock. Santa vs. the Zombie Apocalypse. Homegrown heroes, wild comedy, and epic battles — written, drawn, and owned by Zaynyg World. No licenses. No reboots. Just new stories.</p>
+    <div class="btn-row">
+      <a class="btn btn-gold" href="reader.html">⚡ Read Issue #0 Free</a>
+      <a class="btn btn-ghost" href="library.html">Browse the Library</a>
+    </div>
+  </div>
+</header>
+
+<section class="section"><div class="wrap">
+  <div class="section-head"><h2>🔥 Featured Series</h2><a href="library.html">View all →</a></div>
+  <div class="shelf" id="featured-shelf"></div>
+</div></section>
+
+<section class="section band"><div class="wrap">
+  <div class="section-head"><h2>Why Zaynyg World Comics?</h2></div>
+  <div class="feats">
+    <div class="feat"><div class="ico">📱</div><h3>Built for Your Phone</h3><p>Panel-by-panel reading designed for mobile. Tap through every punch, plot twist, and punchline — no pinching, no zooming.</p></div>
+    <div class="feat"><div class="ico">⚡</div><h3>Original Everything</h3><p>Every hero, villain, and universe is created in-house by Zaynyg World. When you read here, you support the creator directly.</p></div>
+    <div class="feat"><div class="ico">🎁</div><h3>Free Issues, Always</h3><p>Every series launches with a free Issue #0. Fall in love first — pay only for the stories you can't put down.</p></div>
+    <div class="feat"><div class="ico">🌍</div><h3>More Drops Incoming</h3><p>The multiverse keeps growing — new pages land here first, straight from the desk. Comedy, action, fantasy, horror — there's a universe with your name on it.</p></div>
+  </div>
+</div></section>
+
+<section class="section"><div class="wrap">
+  <div class="section-head"><h2>🛒 In the Store</h2><a href="store.html">Open store →</a></div>
+  <div class="shelf" id="store-tease"></div>
+</div></section>
+
+<footer><div class="wrap">
+  <div><strong>⚡ ZAYNYG WORLD COMICS</strong><br>Original comics &amp; superheroes by Zaynyg World.<br>More drops on the way.</div>
+  <div>All characters and stories are original works.<br>© 2026 Zaynyg World. All rights reserved.</div>
+</div></footer>
+
+<script src="data.js"></script>
+<script>
+function card(s){
+  return `<a class="card" href="library.html#${s.id}">
+    ${s.badge?`<span class="badge ${s.status==='free'?'free':s.status==='soon'?'soon':''}">${s.badge}</span>`:''}
+    <img src="${s.cover}" alt="${s.title} cover art" loading="lazy">
+    <div class="card-body"><h3>${s.title}</h3><div class="card-meta">${s.genre} • ${s.audience}</div></div>
+  </a>`;
+}
+document.getElementById('featured-shelf').innerHTML =
+  window.ZAYNYG_SERIES.slice(0,4).map(card).join('');
+document.getElementById('store-tease').innerHTML =
+  window.ZAYNYG_ISSUES.slice(0,4).map(i=>`
+    <a class="card" href="store.html">
+      <img src="${i.cover}" alt="${i.series} ${i.issue}" loading="lazy">
+      <div class="card-body"><h3>${i.series}</h3><div class="card-meta">${i.issue} • ${i.price===0?'<b style="color:#2dd4bf">FREE</b>':'$'+i.price.toFixed(2)}</div></div>
+    </a>`).join('');
+</script>
+</body>
+</html>

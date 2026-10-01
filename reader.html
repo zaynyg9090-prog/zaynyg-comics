@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STAR CLASH #0 — First Spark — Zaynyg World Comics Reader</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b0b12">
+</head>
+<body>
+
+<nav class="nav"><div class="wrap nav-inner">
+  <a class="brand" href="index.html"><span class="zap">⚡</span> ZAYNYG WORLD COMICS</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="library.html">Library</a>
+    <a href="reader.html" class="active">Read Free</a>
+    <a href="store.html">Store</a>
+  </div>
+</div></nav>
+
+<div class="reader-shell">
+  <div class="reader-top">
+    <a href="library.html#star-clash">← STAR CLASH</a>
+    <span style="color:var(--muted);font-weight:700">Issue #0 — First Spark</span>
+  </div>
+  <div class="progress"><i id="bar"></i></div>
+
+  <div id="stage"></div>
+
+  <div class="reader-nav">
+    <button class="btn btn-ghost" id="prev">← Back</button>
+    <span class="count" id="count"></span>
+    <button class="btn btn-gold" id="next">Next →</button>
+  </div>
+</div>
+
+<footer><div class="wrap">
+  <div><strong>⚡ ZAYNYG WORLD COMICS</strong><br>Original comics &amp; superheroes by Zaynyg World.</div>
+  <div>© 2026 Zaynyg World. All rights reserved.</div>
+</div></footer>
+
+<script>
+/* Original mini-comic: STAR CLASH #0 — "First Spark" */
+const PANELS = [
+  { img:"assets/panels/panel-1-sky-crack.webp",
+    cap:"It started on an ordinary Tuesday — the night the sky cracked open over the city, and Jay saw the stars bleeding through." },
+  { textonly:true,
+    cap:"Across the sky, the Crimson Circuit descended — robotic vampire warships come to drain Earth's starlight. The invasion had begun." },
+  { img:"assets/panels/panel-3-starlight-hands.webp",
+    cap:"But the stars had already chosen their champion. Light answered light — and Jay's hands ignited." },
+  { img:"assets/panels/panel-4-leap.webp",
+    cap:"One leap. One spark. The first clash of a war for every planet…" }
+];
+let i = 0;
+const stage = document.getElementById('stage');
+const bar = document.getElementById('bar');
+const count = document.getElementById('count');
+const prevB = document.getElementById('prev');
+const nextB = document.getElementById('next');
+
+function render(){
+  const p = PANELS[i];
+  if(i < PANELS.length){
+    const inner = p.textonly
+      ? `<div class="caption-only"><p>“${p.cap}”</p></div>`
+      : `<img src="${p.img}" alt="Comic panel ${i+1}">`;
+    stage.innerHTML = `
+      <div class="panel-card" id="panelcard" title="Tap to continue">
+        ${inner}
+        <div class="panel-caption"><span class="n">Panel ${i+1} of ${PANELS.length}</span>${p.cap}</div>
+      </div>`;
+    document.getElementById('panelcard').addEventListener('click', ()=>go(1));
+    count.textContent = (i+1)+' / '+PANELS.length;
+    bar.style.width = ((i+1)/PANELS.length*100)+'%';
+    prevB.style.visibility = i===0 ? 'hidden' : 'visible';
+    nextB.textContent = i===PANELS.length-1 ? 'Finish →' : 'Next →';
+  } else {
+    bar.style.width = '100%';
+    count.textContent = 'Done';
+    stage.innerHTML = `
+      <div class="panel-card"><div class="end-card">
+        <h2 class="display">TO BE CONTINUED…</h2>
+        <p>You just read the free preview of <b>STAR CLASH #0 — First Spark</b>.<br>The full 22-page Issue #1 drops soon in the store.</p>
+        <a class="btn btn-gold" href="store.html">Get Issue #1 in the Store</a><br><br>
+        <a href="library.html" style="color:var(--gold);font-weight:700">← Back to the Library</a>
+      </div></div>`;
+    prevB.style.visibility = 'visible';
+    nextB.style.visibility = 'hidden';
+  }
+}
+function go(d){
+  const n = i + d;
+  if(n < 0) return;
+  if(n > PANELS.length) return;
+  i = n;
+  nextB.style.visibility = 'visible';
+  render();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+prevB.addEventListener('click', ()=>go(-1));
+nextB.addEventListener('click', ()=>go(1));
+document.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight') go(1);
+  if(e.key==='ArrowLeft') go(-1);
+});
+render();
+</script>
+</body>
+</html>

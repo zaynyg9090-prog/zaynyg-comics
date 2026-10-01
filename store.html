@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Store — Zaynyg World Comics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b0b12">
+</head>
+<body>
+
+<nav class="nav"><div class="wrap nav-inner">
+  <a class="brand" href="index.html"><span class="zap">⚡</span> ZAYNYG WORLD COMICS</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="library.html">Library</a>
+    <a href="reader.html">Read Free</a>
+    <a href="store.html" class="active">Store</a>
+  </div>
+</div></nav>
+
+<section class="section"><div class="wrap">
+  <div class="section-head"><h2>🛒 The Store</h2></div>
+  <p style="color:var(--muted);margin:-14px 0 26px;max-width:42em">
+    Every series starts with a <b style="color:var(--teal)">FREE Issue #0</b>. Love it? Grab the full issues —
+    you buy straight from the creator, no middleman taking a cut of the dream.
+  </p>
+  <div id="issues"></div>
+
+  <div class="feat" style="margin-top:34px">
+    <div class="ico">🔒</div>
+    <h3>How buying will work</h3>
+    <p>At launch, checkout runs on a free-to-start payment link (small cut per sale, zero monthly fees). You get DRM-free files to keep forever: read in the app, or download the CBZ/PDF. No subscriptions, no lock-in.</p>
+  </div>
+</div></section>
+
+<div class="modal" id="modal"><div class="modal-box">
+  <h3 class="display">Coming right up!</h3>
+  <p id="modal-text">Checkout opens at launch — this issue isn't on sale yet. Thanks for being early. ⚡</p>
+  <button class="btn btn-gold" id="modal-close">Got it</button>
+</div></div>
+
+<footer><div class="wrap">
+  <div><strong>⚡ ZAYNYG WORLD COMICS</strong><br>Original comics &amp; superheroes by Zaynyg World.</div>
+  <div>© 2026 Zaynyg World. All rights reserved.</div>
+</div></footer>
+
+<script src="data.js"></script>
+<script>
+const box = document.getElementById('issues');
+box.innerHTML = window.ZAYNYG_ISSUES.map((it,idx)=>`
+  <div class="issue">
+    <img src="${it.cover}" alt="${it.series} cover" loading="lazy">
+    <div>
+      <h3>${it.series} <span style="color:var(--muted);font-weight:600">— ${it.issue}</span></h3>
+      <div class="meta">${it.note}</div>
+      <span class="price ${it.price===0?'free':''}">${it.price===0?'FREE':'$'+it.price.toFixed(2)}</span>
+      ${it.cta==='read'
+        ? `<a class="btn btn-gold" href="reader.html">Read Now</a>`
+        : `<button class="btn btn-ghost" data-buy="${idx}">${it.price===0?'Get Free Issue':'Buy Issue'}</button>`}
+    </div>
+  </div>`).join('');
+
+const modal = document.getElementById('modal');
+box.addEventListener('click', e=>{
+  const b = e.target.closest('[data-buy]'); if(!b) return;
+  const it = window.ZAYNYG_ISSUES[+b.dataset.buy];
+  document.getElementById('modal-text').textContent =
+    `"${it.series} — ${it.issue}" ${it.price===0?'(FREE)':`($${it.price.toFixed(2)})`} — checkout opens at launch. This issue isn't out yet — check back soon. ⚡`;
+  modal.classList.add('open');
+});
+document.getElementById('modal-close').addEventListener('click', ()=>modal.classList.remove('open'));
+modal.addEventListener('click', e=>{ if(e.target===modal) modal.classList.remove('open'); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') modal.classList.remove('open'); });
+</script>
+</body>
+</html>
