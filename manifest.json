@@ -1,1 +1,30 @@
-{"background_color":"#0b0b12","description":"Original comics and superheroes by Zaynyg World.","display":"standalone","icons":[{"sizes":"192x192","src":"assets/icons/icon-192.png","type":"image/png"},{"sizes":"512x512","src":"assets/icons/icon-512.png","type":"image/png"}],"name":"Zaynyg World Comics","scope":"./","short_name":"ZaynygWorldComics","start_url":"index.html","theme_color":"#0b0b12"}
+{
+  "background_color": "#050508",
+  "description": "Original comics and superheroes by Zaynyg World.",
+  "display": "standalone",
+  "icons": [
+    {
+      "sizes": "192x192",
+      "src": "assets/icons/icon-192.png",
+      "type": "image/png"
+    },
+    {
+      "sizes": "512x512",
+      "src": "assets/icons/icon-512.png",
+      "type": "image/png"
+    }
+  ],
+  "name": "Zaynyg World Comics",
+  "scope": "./",
+  "short_name": "ZaynygWorldComics",
+  "start_url": "index.html",
+  "theme_color": "#050508",
+  "lang": "en",
+  "dir": "ltr",
+  "id": "./",
+  "categories": [
+    "entertainment",
+    "books",
+    "education"
+  ]
+}

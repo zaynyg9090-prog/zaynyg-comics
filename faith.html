@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zaynyg Faith Comics — Bible Stories & Jesus Adventures in Full Color</title>
+<meta name="description" content="Zaynyg Faith Comics: Bible heroes, Jesus adventures, and stories of love and heaven — original faith comics for kids and grown-ups.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="favicon.ico">
+<meta name="theme-color" content="#050508">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .faith-hero{background:linear-gradient(135deg,#1a1206 0%,#050508 60%),radial-gradient(circle at 80% 20%,rgba(255,215,0,.18),transparent 50%);}
+  .faith-badge{display:inline-block;background:linear-gradient(135deg,#ffd700,#ff9d00);color:#1a1200;font-weight:800;font-size:.8rem;letter-spacing:.12em;padding:.4rem 1rem;border-radius:999px;margin-bottom:1rem;}
+  .series-group{margin:2.5rem 0;}
+  .series-group h2{font-family:'Bangers',cursive;letter-spacing:.04em;font-size:1.8rem;margin-bottom:.3rem;}
+  .series-group p{color:var(--muted);margin-bottom:1.2rem;}
+  .imprint-note{background:#141428;border:1px solid #26263a;border-radius:14px;padding:1.4rem;margin-top:2.5rem;color:#cfc6ff;font-size:.95rem;}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="wrap nav-inner">
+  <a class="brand" href="index.html"><span class="zap">⚡</span> ZAYNYG WORLD COMICS</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="library.html">Library</a>
+    <a href="faith.html" class="active">✝️ Faith Comics</a>
+    <a href="reader.html">Read Free</a>
+    <a href="store.html">Store</a>
+    <a href="https://zaynyg-world-dynasty.pages.dev">Blog</a>
+  </div>
+</div></nav>
+
+<header class="hero faith-hero">
+  <div class="hero-shade"></div>
+  <div class="wrap hero-content">
+    <span class="faith-badge">✝️ NEW IMPRINT</span>
+    <h1>FAITH YOU CAN SEE.<br><span class="gold">STORIES YOU'LL NEVER FORGET.</span></h1>
+    <p>Bible heroes. Jesus adventures. Love and heaven — in full comic color. Original faith comics for kids and grown-ups, written and drawn by Zaynyg World. Good always wins.</p>
+    <div class="btn-row">
+      <a class="btn btn-gold" href="#adventures">⚡ Start Reading Free</a>
+      <a class="btn btn-ghost" href="store.html">Get the Comics</a>
+    </div>
+  </div>
+</header>
+
+<section class="section"><div class="wrap" id="faith-shelves"></div></section>
+
+<section class="section"><div class="wrap">
+  <div class="imprint-note">
+    <strong style="color:#ffd700">Our promise:</strong> Bible-story comics stay faithful to Scripture. "Heaven Stories" (like <em>Jesus's Life in Heaven</em>) are hopeful imagination inspired by the Bible's promises — always labeled, never confused with Bible fact. Every book is original, family-clean, and made with love by a dad of five.
+  </div>
+</div></section>
+
+<div class="cross-promo" style="text-align:center;padding:1.2rem;color:#9d8cff;font-size:.9rem;border-top:1px solid #26263a;">
+  Love the comics? <a href="https://zsbzba-dy.myshopify.com" style="color:#2dd4bf;">Get the ebooks</a> &middot;
+  <a href="https://zsbzba-dy.myshopify.com" style="color:#2dd4bf;">Shop the store</a>
+</div>
+
+<footer><div class="wrap">
+  <div><strong>✝️ ZAYNYG FAITH COMICS</strong><br>Original faith comics by Zaynyg World.</div>
+  <div>© 2026 Zaynyg World. All rights reserved.</div>
+  <div><strong>🌐 OUR FAMILY OF SITES</strong><br>
+  <a href="https://zsbzba-dy.myshopify.com" style="color:#2dd4bf;">Toy Store</a> &middot;
+  <a href="https://zsbzba-dy.myshopify.com" style="color:#2dd4bf;">Ebooks</a> &middot;
+  <a href="https://app.amazecommerce.com/shop/zaynygworld" style="color:#2dd4bf;">Amaze Shop</a> &middot;
+  <a href="https://zsbzba-dy.myshopify.com" style="color:#2dd4bf;">Merch</a><br>
+  <a href="https://zaynyg-world-dynasty.pages.dev" style="color:#2dd4bf;">Dynasty Blog</a> &middot;
+  <a href="https://zaynyg-comics.pages.dev" style="color:#2dd4bf;">Comics App</a></div>
+</div></footer>
+
+<script src="data.js"></script>
+<script>
+const GROUPS = [
+  { key:"Bible Heroes", title:"📖 Bible Heroes", desc:"The classic stories — Daniel, David, Jonah, Noah — in full comic color. Faithful to Scripture." },
+  { key:"Jesus Adventures", title:"⚡ Jesus Adventures", desc:"Jesus Boxing School. Karate School. The North Pole. The demon world. The whole galaxy. Faith wins every time." },
+  { key:"Love & Heaven", title:"💛 Love & Heaven", desc:"Weddings, the Bible's great love story, and the joy waiting in heaven." },
+];
+function card(s){
+  const paid = !!s.price;
+  const readable = s.panels > 0 && s.status === "new" && !paid;
+  const href = (readable || paid) ? `faith-reader.html?s=${s.id}` : `store.html`;
+  const cta = readable ? "Read free →" : (paid ? `PAID $${s.price.toFixed(2)} — unlock in reader →` : (s.status === "soon" ? "Coming soon" : "Get the comic →"));
+  const badgeCls = s.status === "soon" ? "soon" : (paid ? "" : "");
+  return `<a class="card" href="${href}">
+    ${s.badge?`<span class="badge ${badgeCls}">${s.badge}</span>`:''}
+    <img src="${s.cover}" alt="${s.title} cover art" loading="lazy">
+    <div class="card-body"><h3>${s.title}</h3><div class="card-meta">${s.vol} • ${s.audience}</div>
+    <div class="card-meta" style="color:var(--gold);font-weight:700">${cta}</div></div>
+  </a>`;
+}
+document.getElementById('faith-shelves').innerHTML = GROUPS.map((g,gi)=>`
+  <div class="series-group" ${gi===1?'id="adventures"':''}>
+    <h2>${g.title}</h2><p>${g.desc}</p>
+    <div class="shelf">${window.FAITH_SERIES.filter(s=>s.vol.startsWith(g.key)).map(card).join('')}</div>
+  </div>`).join('');
+</script>
+</body>
+</html>

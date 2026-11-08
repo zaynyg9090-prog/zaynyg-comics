@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faith Comics Reader — Zaynyg World Comics</title>
+<meta name="description" content="Read Zaynyg Faith Comics panel-by-panel — Bible heroes, Jesus adventures, and stories of love and heaven. Original faith comics for kids and grown-ups.">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="favicon.ico">
+<meta name="theme-color" content="#050508">
+<style>
+/* PAID faith issues: paywall gate (stub — pay-link workstream wires real checkout) */
+#pay-gate{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at center,#1a1440 0%,#050508 75%);padding:24px}
+.pay-card{max-width:540px;text-align:center;background:#14141f;border:2px solid #ffd700;border-radius:18px;
+  padding:44px 36px;box-shadow:0 0 60px rgba(255,215,0,.2)}
+.pay-card h1{font-size:2.4rem;margin:.2em 0 .4em}
+.pay-card p{color:var(--muted);line-height:1.6;margin-bottom:14px}
+.price-tag{font-size:2.6rem;font-weight:800;color:#fff;margin:10px 0}
+.pay-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+.btn-paid{background:linear-gradient(135deg,#ffd700,#ff9d00);color:#1a1200;font-weight:800;padding:14px 30px;border-radius:999px;border:0;cursor:pointer;font-size:1rem}
+.btn-paid:hover{transform:translateY(-2px)}
+.beat-card{background:#14141f;border:1px solid #26263a;border-radius:16px;padding:34px 30px;margin:0 auto;max-width:640px}
+.beat-card .beat-n{color:var(--gold);font-weight:800;font-size:.85rem;letter-spacing:.1em;text-transform:uppercase}
+.beat-card p{font-size:1.2rem;line-height:1.7;color:#f0ecff;margin:.6em 0 0}
+</style>
+</head>
+<body>
+
+<div id="pay-gate" style="display:none">
+  <div class="pay-card">
+    <div class="price-tag">🔒 <span id="pay-price"></span></div>
+    <h1 class="display">PAID ISSUE</h1>
+    <p><strong style="color:#fff" id="pay-title"></strong> is a paid issue — the complete story, staged and ready.</p>
+    <p><strong style="color:#2dd4bf">PAID — one-tap pay link coming.</strong> Checkout opens at launch; the pay-link workstream wires the real link.</p>
+    <div class="pay-btns">
+      <button class="btn-paid" id="paybtn">Pay — coming soon</button>
+      <a class="btn btn-ghost" href="faith.html">Back to Faith Comics</a>
+    </div>
+    <p id="pay-note" style="margin-top:18px;color:var(--muted)"></p>
+  </div>
+</div>
+
+<nav class="nav"><div class="wrap nav-inner">
+  <a class="brand" href="index.html"><span class="zap">⚡</span> ZAYNYG WORLD COMICS</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="library.html">Library</a>
+    <a href="faith.html" class="active">✝️ Faith Comics</a>
+    <a href="reader.html">Read Free</a>
+    <a href="store.html">Store</a>
+    <a href="https://zaynyg-world-dynasty.pages.dev">Blog</a>
+  </div>
+</div></nav>
+
+<div class="reader-shell">
+  <div class="reader-top">
+    <a href="faith.html" id="back-link">← Faith Comics</a>
+    <span style="color:var(--muted);font-weight:700" id="issue-title">Loading…</span>
+  </div>
+  <div class="progress"><i id="bar"></i></div>
+
+  <div id="stage"></div>
+
+  <div class="reader-nav">
+    <button class="btn btn-ghost" id="prev">← Back</button>
+    <span class="count" id="count"></span>
+    <button class="btn btn-gold" id="next">Next →</button>
+  </div>
+</div>
+
+<div class="cross-promo" style="text-align:center;padding:1.2rem;color:#9d8cff;font-size:.9rem;border-top:1px solid #26263a;">
+  Love it? <a href="https://zsbzba-dy.myshopify.com" style="color:#2dd4bf;">Get the full ebook</a> &middot;
+  <a href="faith.html" style="color:#2dd4bf;">More Faith Comics</a>
+</div>
+
+<footer><div class="wrap">
+  <div><strong>✝️ ZAYNYG FAITH COMICS</strong><br>Original faith comics by Zaynyg World.</div>
+  <div>© 2026 Zaynyg World. All rights reserved.</div>
+<div><strong>🌐 OUR FAMILY OF SITES</strong><br>
+  <a href="https://zsbzba-dy.myshopify.com" style="color:#2dd4bf;">Toy Store</a> &middot;
+  <a href="https://zsbzba-dy.myshopify.com" style="color:#2dd4bf;">Ebooks</a> &middot;
+  <a href="https://app.amazecommerce.com/shop/zaynygworld" style="color:#2dd4bf;">Amaze Shop</a> &middot;
+  <a href="https://zsbzba-dy.myshopify.com" style="color:#2dd4bf;">Merch</a><br>
+  <a href="https://zaynyg-world-dynasty.pages.dev" style="color:#2dd4bf;">Dynasty Blog</a> &middot;
+  <a href="https://zaynyg-comics.pages.dev" style="color:#2dd4bf;">Comics App</a></div>
+</div></footer>
+
+<script src="data.js"></script>
+<script src="payments/pay-config.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const sid = params.get('s');
+const series = (window.FAITH_SERIES||[]).find(x=>x.id===sid);
+const captions = (window.FAITH_CAPTIONS||{})[sid] || [];
+const stage = document.getElementById('stage');
+const bar = document.getElementById('bar');
+const count = document.getElementById('count');
+const prevB = document.getElementById('prev');
+const nextB = document.getElementById('next');
+let i = 0;
+
+if(!series || (series.panels === 0 && !series.textPanels)){
+  document.getElementById('issue-title').textContent = 'Not available yet';
+  stage.innerHTML = `<div class="panel-card"><div class="end-card">
+    <h2 class="display">COMING SOON</h2>
+    <p>This comic is being drawn right now. Check back soon!</p>
+    <a class="btn btn-gold" href="faith.html">← Back to Faith Comics</a></div></div>`;
+  prevB.style.visibility = 'hidden'; nextB.style.visibility = 'hidden';
+} else if(series.price){
+  /* PAID issue: paywall gate stays up. Stub — the pay-link workstream wires real checkout.
+     Content (story beats) is staged in data.js; painted panels drop in the next art round. */
+  document.getElementById('issue-title').textContent = series.title;
+  document.getElementById('pay-title').textContent = series.title;
+  document.getElementById('pay-price').textContent = '$' + series.price.toFixed(2);
+  var payIssue = (window.ZW_PAY && window.ZW_PAY.getIssue(sid)) || null;
+  var payLive = !!(payIssue && window.ZW_PAY.isLive(payIssue));
+  document.getElementById('paybtn').textContent = payLive
+    ? 'Pay $' + series.price.toFixed(2) + ' — Buy now'
+    : 'Pay $' + series.price.toFixed(2) + ' — coming soon';
+  document.getElementById('pay-note').innerHTML =
+    'PAID — one-tap pay link coming. Checkout opens at launch — this issue isn\'t on sale yet. ⚡<br>' +
+    '<a href="faith.html" style="color:var(--gold);font-weight:700">More Faith Comics (free previews) →</a>';
+  document.getElementById('pay-gate').style.display = 'flex';
+  document.getElementById('paybtn').addEventListener('click', function(){
+    var issue = (window.ZW_PAY && window.ZW_PAY.getIssue(sid)) || null;
+    if(issue && window.ZW_PAY.isLive(issue)){
+      window.location.href = issue.payLink;
+      return;
+    }
+    document.getElementById('pay-note').innerHTML =
+      '<strong style="color:#2dd4bf">PAID — one-tap pay link coming.</strong> Checkout opens at launch — this issue isn\'t on sale yet. ⚡';
+  });
+  prevB.style.visibility = 'hidden'; nextB.style.visibility = 'hidden';
+} else {
+  document.getElementById('issue-title').textContent = series.title;
+  document.getElementById('back-link').textContent = '← ' + series.title;
+  document.title = series.title + ' — Faith Comics Reader';
+  const N = series.panels;
+  function render(){
+    if(i < N){
+      const img = `assets/faith/${sid}/panel-${i+1}.jpg`;
+      const cap = captions[i] || `${series.title} — Panel ${i+1}`;
+      stage.innerHTML = `
+        <div class="panel-card" id="panelcard" title="Tap to continue">
+          <img src="${img}" alt="${series.title} panel ${i+1}">
+          <div class="panel-caption"><span class="n">Panel ${i+1} of ${N}</span>${cap}</div>
+        </div>`;
+      document.getElementById('panelcard').addEventListener('click', ()=>go(1));
+      count.textContent = (i+1)+' / '+N;
+      bar.style.width = ((i+1)/N*100)+'%';
+      prevB.style.visibility = i===0 ? 'hidden' : 'visible';
+      nextB.textContent = i===N-1 ? 'Finish →' : 'Next →';
+      nextB.style.visibility = 'visible';
+    } else {
+      bar.style.width = '100%';
+      count.textContent = 'Done';
+      stage.innerHTML = `
+        <div class="panel-card"><div class="end-card">
+          <h2 class="display">TO BE CONTINUED…</h2>
+          <p>You just read <b>${series.title}</b> — free preview.<br>The full picture books are in the Zaynyg World store.</p>
+          <a class="btn btn-gold" href="https://zsbzba-dy.myshopify.com/collections/books">Get the Book</a><br><br>
+          <a href="faith.html" style="color:var(--gold);font-weight:700">← More Faith Comics</a>
+        </div></div>`;
+      prevB.style.visibility = 'visible';
+      nextB.style.visibility = 'hidden';
+    }
+  }
+  function go(d){ const n=i+d; if(n<0||n>N) return; i=n; render(); window.scrollTo({top:0,behavior:'smooth'}); }
+  prevB.addEventListener('click', ()=>go(-1));
+  nextB.addEventListener('click', ()=>go(1));
+  document.addEventListener('keydown', e=>{ if(e.key==='ArrowRight') go(1); if(e.key==='ArrowLeft') go(-1); });
+  render();
+}
+</script>
+</body>
+</html>

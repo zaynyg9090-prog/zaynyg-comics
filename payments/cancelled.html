@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment Cancelled — Zaynyg World Comics</title>
+<meta name="description" content="Your Zaynyg World Comics checkout was cancelled. No charge was made.">
+<meta name="robots" content="noindex,nofollow">
+<link rel="stylesheet" href="../styles.css">
+<link rel="icon" href="../favicon.ico">
+<meta name="theme-color" content="#050508">
+<style>
+.done-shell{max-width:600px;margin:0 auto;padding:40px 20px 70px;text-align:center}
+.done-card{background:#14141f;border:1px solid #2a2a44;border-radius:18px;padding:38px 30px}
+.done-emoji{font-size:3.4rem}
+.done-card h1{font-size:2.2rem;margin:.4em 0}
+.done-card p{color:var(--muted);line-height:1.65;margin:.6em 0}
+.big-btn{display:inline-flex;align-items:center;justify-content:center;min-height:56px;width:100%;
+  padding:16px 24px;font-size:1.1rem;font-weight:800;border-radius:999px;background:var(--gold);color:#191104;
+  text-decoration:none;margin-top:14px}
+.ghost-link{display:inline-block;margin-top:16px;color:var(--teal);font-weight:700;min-height:48px;padding:12px}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="wrap nav-inner">
+  <a class="brand" href="../index.html"><span class="zap">⚡</span> ZAYNYG WORLD COMICS</a>
+  <div class="nav-links">
+    <a href="../index.html">Home</a>
+    <a href="../library.html">Library</a>
+    <a href="../reader.html">Read Free</a>
+    <a href="../store.html">Store</a>
+  </div>
+</div></nav>
+
+<main class="done-shell">
+  <div class="done-card">
+    <div class="done-emoji">💨</div>
+    <h1 class="display">NO WORRIES — NOTHING WAS CHARGED.</h1>
+    <p id="issueLine">Your checkout was cancelled before payment. The issue will be waiting whenever you're ready — and Issue #0 of every series is always free.</p>
+    <!-- [TODO: set this page as the Payment Link "cancel" redirect in the Stripe
+         Dashboard AFTER Jose completes payout onboarding. Until then this page
+         is staged and unreachable from checkout.] -->
+    <a class="big-btn" id="backBtn" href="../library.html">← Back to the issue</a>
+    <br>
+    <a class="ghost-link" href="../reader.html">Read a FREE Issue #0 instead →</a>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <div><strong>⚡ ZAYNYG WORLD COMICS</strong><br>Original comics &amp; superheroes by Zaynyg World.</div>
+  <div>© 2026 Zaynyg World. All rights reserved.</div>
+</div></footer>
+
+<script src="pay-config.js"></script>
+<script>
+/* Cancel landing. Stripe redirects here when the buyer backs out:
+   payments/cancelled.html?issue=<sku> */
+(function(){
+  "use strict";
+  var sku = new URLSearchParams(location.search).get('issue');
+  var issue = window.ZW_PAY.getIssue(sku);
+  if(issue){
+    document.getElementById('backBtn').href = "../paid-reader.html?issue=" + encodeURIComponent(sku);
+    document.getElementById('issueLine').textContent =
+      "Your checkout for " + issue.series + " " + issue.title +
+      " was cancelled before payment — nothing was charged. " +
+      "The issue will be waiting whenever you're ready.";
+  }
+})();
+</script>
+</body>
+</html>

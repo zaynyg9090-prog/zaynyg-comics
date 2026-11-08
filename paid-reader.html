@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paid Issue — Zaynyg World Comics Reader</title>
+<meta name="description" content="Unlock paid Zaynyg World Comics issues with one tap. Issue #0 always free.">
+<meta name="robots" content="noindex,nofollow">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#050508">
+<style>
+/* One-tap paywall — STAGED. See payments/PAYWALL-DESIGN.md */
+.pay-shell{max-width:640px;margin:0 auto;padding:28px 20px 60px}
+.pay-card{background:#14141f;border:1px solid #2a2a44;border-radius:18px;overflow:hidden;text-align:center}
+.pay-card img.cover{width:100%;max-height:340px;object-fit:cover;display:block}
+.pay-body{padding:28px 26px 34px}
+.pay-body .series{color:var(--teal);font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:.8rem}
+.pay-body h1{font-size:2rem;margin:.3em 0 .4em;line-height:1.15}
+.pay-body p.blurb{color:var(--muted);line-height:1.65;margin:0 0 6px}
+.price-big{font-size:2.4rem;font-weight:800;color:var(--gold);margin:14px 0 4px}
+.tier-note{color:var(--muted);font-size:.85rem;margin-bottom:18px}
+.pay-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+  min-height:56px;padding:16px 24px;font-size:1.15rem;font-weight:800;border-radius:999px;border:0;cursor:pointer;
+  background:var(--gold);color:#191104;text-decoration:none;margin:6px 0 10px}
+.pay-btn:hover{transform:translateY(-2px)}
+.pay-btn:active{transform:translateY(0)}
+.staged-banner{background:#3a2c07;border:1px dashed var(--gold);color:#ffe9a8;border-radius:12px;
+  padding:12px 16px;font-size:.85rem;line-height:1.55;margin:16px 0;text-align:left}
+.code-toggle{background:none;border:0;color:var(--teal);font-weight:700;font-size:.95rem;cursor:pointer;
+  padding:12px;min-height:48px;text-decoration:underline}
+.code-row{display:none;gap:8px;margin-top:8px}
+.code-row.open{display:flex}
+.code-row input{flex:1;min-height:48px;border-radius:12px;border:2px solid #3a3a55;background:#050508;color:#fff;
+  padding:0 14px;font-size:1rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.code-row button{min-height:48px;padding:0 22px;border-radius:12px;border:0;background:var(--teal);color:#06281f;
+  font-weight:800;font-size:1rem;cursor:pointer}
+.code-err{display:none;color:#ff8fa3;font-size:.85rem;margin-top:8px;font-weight:700}
+.badge-18{display:inline-block;background:#ff2f4e;color:#fff;font-weight:800;letter-spacing:.1em;
+  font-size:.8rem;padding:6px 16px;border-radius:999px;text-transform:uppercase;margin-bottom:10px}
+/* 18+ gate (same pattern as after-dark pages) */
+#age-gate{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at center,#1a0b14 0%,#050508 75%);padding:24px}
+.gate-card{max-width:520px;text-align:center;background:#14141f;border:2px solid #ff2f4e;border-radius:18px;
+  padding:44px 36px;box-shadow:0 0 60px rgba(255,47,78,.25)}
+.gate-card h1{font-size:2.4rem;margin:.2em 0 .4em}
+.gate-card p{color:var(--muted);line-height:1.6;margin-bottom:14px}
+.gate-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+.btn-red{background:#ff2f4e;color:#fff;font-weight:800;padding:14px 30px;border-radius:999px;border:0;cursor:pointer;
+  font-size:1rem;min-height:48px;display:inline-flex;align-items:center}
+.reader-shell{max-width:760px;margin:0 auto;padding:20px}
+.unlocked-strip{background:#0f3a22;border:1px solid #2dd4bf;color:#a7f3d0;border-radius:12px;
+  padding:12px 16px;font-weight:700;text-align:center;margin:18px 0}
+</style>
+</head>
+<body>
+
+<!-- 18+ gate renders here for adult-lane issues, BEFORE any paywall or content -->
+<div id="age-gate" style="display:none">
+  <div class="gate-card">
+    <span class="badge-18">🔞 18+ Adults Only</span>
+    <h1 class="display">STOP. ID CHECK.</h1>
+    <p>This is an <strong style="color:#fff">adults-only (18+) paid issue</strong>. By entering, you confirm you are <strong style="color:#fff">18 years of age or older</strong>.</p>
+    <div class="gate-btns">
+      <button class="btn-red" id="enter18">I'M 18+ — ENTER</button>
+      <a class="btn btn-ghost" style="min-height:48px;display:inline-flex;align-items:center" href="library.html">I'm under 18 — back to comics</a>
+    </div>
+  </div>
+</div>
+
+<nav class="nav"><div class="wrap nav-inner">
+  <a class="brand" href="index.html"><span class="zap">⚡</span> ZAYNYG WORLD COMICS</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="library.html">Library</a>
+    <a href="reader.html">Read Free</a>
+    <a href="store.html">Store</a>
+    <a href="https://zaynyg-world-dynasty.pages.dev">Blog</a>
+  </div>
+</div></nav>
+
+<main class="pay-shell" id="app"><!-- rendered by script --></main>
+
+<footer><div class="wrap">
+  <div><strong>⚡ ZAYNYG WORLD COMICS</strong><br>Original comics &amp; superheroes by Zaynyg World.</div>
+  <div>© 2026 Zaynyg World. All rights reserved.</div>
+  <div>Issue #0 of every series is <strong style="color:#2dd4bf">FREE</strong> — <a href="reader.html" style="color:#2dd4bf;">read it now</a>.</div>
+</div></footer>
+
+<script src="payments/pay-config.js"></script>
+<script src="payments/unlock.js"></script>
+<script>
+(function(){
+  "use strict";
+  var app = document.getElementById('app');
+  var gate = document.getElementById('age-gate');
+  var sku = new URLSearchParams(location.search).get('issue');
+  var issue = window.ZW_PAY.getIssue(sku);
+
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+  /* ---- unknown SKU ---- */
+  if(!issue){
+    document.title = "Issue not found — Zaynyg World Comics";
+    app.innerHTML =
+      '<div class="pay-card"><div class="pay-body">' +
+      '<h1 class="display">Hmm, that issue doesn\'t exist.</h1>' +
+      '<p class="blurb">The link may be old. Every series starts with a FREE Issue #0.</p><br>' +
+      '<a class="pay-btn" href="library.html">Browse the Library</a>' +
+      '<a class="code-toggle" href="reader.html">Read a free Issue #0 instead</a>' +
+      '</div></div>';
+    return;
+  }
+
+  document.title = esc(issue.series + ' ' + issue.title + ' — Zaynyg World Comics');
+
+  /* ---- 18+ gate FIRST for adult-lane issues (same zw_adult_ok flag as after-dark pages) ---- */
+  function needGate(){ return issue.adult && localStorage.getItem(window.ZW_UNLOCK.ADULT_KEY) !== '1'; }
+  function passGate(){
+    if(!needGate()){ gate.style.display='none'; boot(); return; }
+    gate.style.display='flex';
+    document.getElementById('enter18').addEventListener('click', function(){
+      try{ localStorage.setItem(window.ZW_UNLOCK.ADULT_KEY,'1'); }catch(e){}
+      gate.style.display='none'; boot();
+    });
+  }
+
+  function boot(){
+    /* Nov 8, 2026: issues with no finished pages show an honest COMING SOON card —
+       no buy button, no unlock box, never an empty "reserved" reader. */
+    if(window.ZW_PAY.hasContent && !window.ZW_PAY.hasContent(issue)){ renderComingSoon(); return; }
+    if(window.ZW_UNLOCK.isUnlocked(issue.sku)) renderReader();
+    else renderPaywall();
+  }
+
+  /* ---- COMING SOON (issue art not finished yet) ---- */
+  function renderComingSoon(){
+    app.innerHTML =
+      '<div class="pay-card">' +
+        '<img class="cover" src="'+esc(issue.cover)+'" alt="'+esc(issue.series+' '+issue.title)+' cover" onerror="this.style.display=\'none\'">' +
+        '<div class="pay-body">' +
+          '<div class="series">'+esc(issue.series)+'</div>' +
+          '<h1 class="display">'+esc(issue.title)+'</h1>' +
+          '<p class="blurb">'+esc(issue.blurb)+'</p>' +
+          '<span class="pay-btn" style="opacity:.65;cursor:default">🎨 COMING SOON</span>' +
+          '<div class="tier-note">This issue is still being drawn. It isn\'t for sale yet, so nobody can be charged for it.</div>' +
+          '<br><a class="pay-btn" href="reader.html">⚡ Read a FREE Issue #0 now</a>' +
+          '<a class="code-toggle" href="library.html">← Back to the Library</a>' +
+        '</div>' +
+      '</div>';
+  }
+
+  /* ---- PAYWALL ---- */
+  function renderPaywall(){
+    var live = window.ZW_PAY.isLive(issue);
+    var adultBadge = issue.adult ? '<span class="badge-18">🔞 18+ Adults Only</span><br>' : '';
+    var statusNote = issue.status === 'presale'
+      ? '<div class="tier-note">⭐ <strong>Pre-order:</strong> issue drops soon — your copy is reserved the moment you buy.</div>'
+      : '<div class="tier-note">Read instantly in the app after purchase. DRM-free, yours forever.</div>';
+    app.innerHTML =
+      '<div class="pay-card">' +
+        '<img class="cover" src="'+esc(issue.cover)+'" alt="'+esc(issue.series+' '+issue.title)+' cover">' +
+        '<div class="pay-body">' + adultBadge +
+          '<div class="series">'+esc(issue.series)+'</div>' +
+          '<h1 class="display">'+esc(issue.title)+'</h1>' +
+          '<p class="blurb">'+esc(issue.blurb)+'</p>' +
+          '<div class="price-big">'+window.ZW_PAY.money(issue.price)+'</div>' +
+          statusNote +
+          /* ONE-TAP PAY LINK — Shopify checkout (see payments/CHECKOUT-README.md).
+             While LAUNCH is off, isLive() is false and the button renders as COMING SOON
+             (a span, never a link) so no checkout can open early. */
+          (live
+            ? '<a class="pay-btn" id="buyBtn" href="'+esc(issue.payLink)+'">⚡ BUY NOW — '+window.ZW_PAY.money(issue.price)+'</a>'
+            : '<span class="pay-btn" style="opacity:.65;cursor:default">⚡ COMING SOON — '+window.ZW_PAY.money(issue.price)+'</span>') +
+          '<div class="tier-note">One tap. Secure checkout by Shopify. Apple Pay / Google Pay supported.</div>' +
+          (live ? '' :
+            '<div class="staged-banner">🛠️ <strong>Checkout opens at launch.</strong><br>' +
+            'This issue isn\'t on sale yet. Nothing can charge you from this page until then.</div>') +
+          '<button class="code-toggle" id="codeToggle">I already paid — enter my unlock code</button>' +
+          '<div class="code-row" id="codeRow">' +
+            '<input id="codeInput" inputmode="text" autocomplete="off" autocapitalize="characters" ' +
+              'placeholder="ZW1-XXXX-XXXX" aria-label="Unlock code">' +
+            '<button id="codeGo">Unlock</button>' +
+          '</div>' +
+          '<div class="code-err" id="codeErr">That code didn\'t match this issue — check your receipt and try again.</div>' +
+          '<br><a class="code-toggle" href="reader.html">New here? Read a FREE Issue #0 first →</a>' +
+        '</div>' +
+      '</div>';
+
+    var t = document.getElementById('codeToggle'), r = document.getElementById('codeRow');
+    t.addEventListener('click', function(){
+      r.classList.toggle('open');
+      if(r.classList.contains('open')) document.getElementById('codeInput').focus();
+    });
+    function tryCode(){
+      var v = document.getElementById('codeInput').value;
+      if(window.ZW_UNLOCK.validateCode(issue.sku, v)){
+        window.ZW_UNLOCK.unlock(issue.sku);
+        renderReader();
+        window.scrollTo({top:0});
+      } else {
+        document.getElementById('codeErr').style.display='block';
+      }
+    }
+    document.getElementById('codeGo').addEventListener('click', tryCode);
+    document.getElementById('codeInput').addEventListener('keydown', function(e){
+      if(e.key==='Enter') tryCode();
+    });
+  }
+
+  /* ---- READER (unlocked) ----
+     TODO(content crew): when a paid issue's art is finished, add its pages to
+     PAID_PAGES[sku] below as {img, cap} entries (same shape as reader.html).
+     Until then, presale buyers see the "reserved" state — honest, no dead ends. */
+  var PAID_PAGES = {
+    "overdue-2": [
+      {img:"assets/panels/overdue2-panel-1.webp", cap:"PREVIOUSLY — Red-ink numerals appeared in the sky. Every person who ever borrowed a miracle saw their balance, written in fire over their own head."},
+      {img:"assets/panels/overdue2-panel-2.webp", cap:"THE SKY BECAME PAPER — The Comptroller freezes the city. All powers suspended pending review."},
+      {img:"assets/panels/overdue2-panel-3.webp", cap:"THE BACK ROOM — Seven debtors around one table. Whoever clears the audit gets their power back first."},
+      {img:"assets/panels/overdue2-panel-4.webp", cap:"THE AUDIT — A coat. A bus fare. A Tuesday. No collateral. The Comptroller cannot process a gift."},
+      {img:"assets/panels/overdue2-panel-5.webp", cap:"PRIYA'S FUSE — Six hands on the desk. \"We cover her. Split it. The tab's ours.\""},
+      {img:"assets/panels/overdue2-panel-6.webp", cap:"THE RELAY — A gift is a payment the Ledger can't receipt. The city learns the trick by watching."},
+      {img:"assets/panels/overdue2-panel-7.webp", cap:"THE COMPTROLLER ADAPTS — Organizing gifts is now \"conspiracy.\" One address gets stamped in red: 1140 Halstead Ave."},
+      {img:"assets/panels/overdue2-panel-8.webp", cap:"THE NOTICE — Repossession. The shop was borrowed all along. \"I thought we had more time.\""},
+      {img:"assets/panels/overdue2-panel-9.webp", cap:"THE CRAYON FILE — Seven stick figures holding hands. Filed under \"P.\" For pending."},
+      {img:"assets/panels/overdue2-panel-10.webp", cap:"TONIGHT, IT COLLECTED OURS — \"We were never the shop. We're the tab. And the tab just went mobile.\""}
+    ],
+    "star-clash-az-1": [
+      {img:"assets/panels/scaz1-panel-1.webp", cap:"THE INVITATION — Four planets, four skies, one sigil: a jaw, closing. THE CIRCUIT INVITES YOU."},
+      {img:"assets/panels/scaz1-panel-2.webp", cap:"FOUR WORLDS — The prize is a fairy tale. The venue is a stomach. Every bout feeds the Engine."},
+      {img:"assets/panels/scaz1-panel-3.webp", cap:"THE MUSTER — \"We answer the jaw that invites, we four, we few, we burning lights.\""},
+      {img:"assets/panels/scaz1-panel-4.webp", cap:"SEVENFOLD VOLUNTEERS — \"I've died six times already. I'm very good at it. It's practically my hobby.\""},
+      {img:"assets/panels/scaz1-panel-5.webp", cap:"THE PLAN — Together. Not the champions. The venue."},
+      {img:"assets/panels/scaz1-panel-6.webp", cap:"THE EXAM — Sevenfold lets the first killing blow land, studying it on the way down. Every death is a probe."},
+      {img:"assets/panels/scaz1-panel-7.webp", cap:"THE AUDITOR — \"I'm not the combatant anymore. I'm the auditor. Auditors don't die. They just... file.\""},
+      {img:"assets/panels/scaz1-panel-8.webp", cap:"THE FOUR STEP IN — The arena breathes. The Engine beats. TO BE CONTINUED — Ascendant Zero #2: \"Brackets.\""}
+    ],
+    "jesus-wedding": [
+      {img:"assets/faith/jesus-wedding/panel-1.jpg", cap:"A wedding in Cana — and the wine runs out! Mary turns to Jesus with a mother's knowing smile."},
+      {img:"assets/faith/jesus-wedding/panel-2.jpg", cap:"\"Fill the jars with water,\" Jesus tells the servants. Six stone jars, full to the brim."},
+      {img:"assets/faith/jesus-wedding/panel-3.jpg", cap:"\"Draw some out and take it to the master of the feast,\" He says. The servants obey — wondering."},
+      {img:"assets/faith/jesus-wedding/panel-4.jpg", cap:"The master tastes... and his eyes go wide. This is the BEST wine — saved for last!"},
+      {img:"assets/faith/jesus-wedding/panel-5.jpg", cap:"The guests rejoice, the music plays louder. Jesus's first miracle — at a party."},
+      {img:"assets/faith/jesus-wedding/panel-6.jpg", cap:"His disciples believed in Him. And every wedding since has carried a little of Cana's joy."}
+    ]
+  };
+
+  function renderReader(){
+    var pages = PAID_PAGES[issue.sku] || [];
+    var adultBadge = issue.adult ? ' <span class="badge-18" style="margin:0">🔞 18+</span>' : '';
+    if(!pages.length){
+      app.innerHTML =
+        '<div class="unlocked-strip">✅ Unlocked — '+esc(issue.series+' '+issue.title)+adultBadge+'</div>' +
+        '<div class="pay-card"><div class="pay-body">' +
+          '<h1 class="display">YOUR COPY IS RESERVED ⚡</h1>' +
+          '<p class="blurb">You\'re in! This issue is still being drawn — the moment it drops, ' +
+          'it appears right here. No extra charge, no extra steps. Thanks for backing the universe early.</p><br>' +
+          '<a class="pay-btn" href="reader.html">Read a FREE Issue #0 while you wait</a>' +
+          '<br><a class="code-toggle" href="library.html">← Back to the Library</a>' +
+        '</div></div>';
+      return;
+    }
+    /* Full page-by-page reader (same shape as reader.html). */
+    var i = 0;
+    function renderPage(){
+      var page = pages[i];
+      app.innerHTML =
+        '<div class="unlocked-strip">✅ Unlocked — '+esc(issue.series+' '+issue.title)+adultBadge+'</div>' +
+        '<div class="reader-shell"><div class="progress"><i style="width:'+((i+1)/pages.length*100)+'%"></i></div>' +
+        '<div class="panel-card" id="panelcard" title="Tap to continue">' +
+          '<img src="'+esc(page.img)+'" alt="'+esc(issue.title)+' page '+(i+1)+'">' +
+          '<div class="panel-caption"><span class="n">Page '+(i+1)+' of '+pages.length+'</span>'+esc(page.cap)+'</div>' +
+        '</div>' +
+        '<div class="reader-nav">' +
+          '<button class="btn btn-ghost" id="pg-prev" '+(i===0?'style="visibility:hidden"':'')+'>← Back</button>' +
+          '<span class="count">'+(i+1)+' / '+pages.length+'</span>' +
+          '<button class="btn btn-gold" id="pg-next">'+(i===pages.length-1?'Finish →':'Next →')+'</button>' +
+        '</div></div>';
+      document.getElementById('panelcard').addEventListener('click', function(){ goPg(1); });
+      document.getElementById('pg-prev').addEventListener('click', function(){ goPg(-1); });
+      document.getElementById('pg-next').addEventListener('click', function(){ goPg(1); });
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+    function goPg(d){
+      if(i + d < 0) return;
+      if(i + d >= pages.length){
+        app.innerHTML =
+          '<div class="unlocked-strip">✅ Unlocked — '+esc(issue.series+' '+issue.title)+adultBadge+'</div>' +
+          '<div class="pay-card"><div class="pay-body">' +
+            '<h1 class="display">TO BE CONTINUED…</h1>' +
+            '<p class="blurb">You finished <b>'+esc(issue.series+' '+issue.title)+'</b>. Thanks for backing the universe early. ⚡</p><br>' +
+            '<a class="pay-btn" href="library.html">← Back to the Library</a>' +
+          '</div></div>';
+        return;
+      }
+      i += d; renderPage();
+    }
+    renderPage();
+  }
+
+  passGate();
+})();
+</script>
+</body>
+</html>

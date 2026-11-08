@@ -1,0 +1,324 @@
+/* ==========================================================================
+   GLOW READER — glow-reader.css
+   The Zaynyg World glowing bubble system.
+   FAMILY / FAITH LANE ONLY. Adult content keeps its own gated reader.
+   Each bubble carries its character's signature color in CSS var --c.
+   Shapes: .b-hero (rounded bold) · .b-villain (jagged/spiked)
+           .b-cosmic (wispy cloud) · .b-tech (angular tech)
+   ========================================================================== */
+
+/* ---------- Reader page chrome ---------- */
+:root{
+  --glow-bg:#050508;
+}
+body.glow-body{
+  background:
+    radial-gradient(1200px 600px at 50% -10%, #1a1408 0%, transparent 60%),
+    radial-gradient(900px 500px at 90% 110%, #140a06 0%, transparent 55%),
+    var(--glow-bg);
+  min-height:100vh;
+}
+.glow-top{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  max-width:860px;margin:0 auto;padding:18px 20px 6px;
+}
+.glow-brand{font-family:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:1.5rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;background:linear-gradient(180deg,#ffffff 0%,#e8e8ec 42%,#9aa0b0 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.glow-brand .zap{color:var(--gold,#ffd23f);text-shadow:0 0 12px rgba(255,210,63,.9)}
+.proto-badge{
+  font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  color:#191104;background:linear-gradient(90deg,#ffd23f,#ff7a1a);
+  padding:5px 14px;border-radius:999px;box-shadow:0 0 18px rgba(255,122,26,.55);
+  white-space:nowrap;
+}
+.glow-sub{max-width:860px;margin:0 auto;padding:0 20px 4px;color:#9aa0b0;font-size:.85rem;font-weight:600}
+.glow-sub b{color:#ffd23f}
+
+/* ---------- Legend ---------- */
+.legend{
+  max-width:860px;margin:12px auto 0;padding:0 20px;
+}
+.legend-toggle{
+  background:#0a0a12;border:1px solid #2a2a3a;color:#ffd23f;font-weight:800;
+  font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:9px 20px;border-radius:999px;cursor:pointer;
+  box-shadow:0 0 14px rgba(255,210,63,.18);
+}
+.legend-toggle:hover{box-shadow:0 0 22px rgba(255,210,63,.4)}
+.legend-grid{
+  display:none;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;
+  margin-top:12px;padding:14px;background:#0a0a12;border:1px solid #1e1e2e;border-radius:14px;
+}
+.legend.open .legend-grid{display:grid}
+.legend-item{display:flex;align-items:center;gap:10px;font-size:.82rem;font-weight:700;color:#f2f2f5}
+.legend-dot{
+  width:20px;height:20px;border-radius:50%;flex:0 0 20px;
+  background:var(--c);box-shadow:0 0 12px var(--c),0 0 4px var(--c);
+}
+.legend-item small{display:block;color:#9aa0b0;font-weight:600;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase}
+
+/* ---------- Reader shell ---------- */
+.glow-shell{max-width:860px;margin:0 auto;padding:14px 20px 90px}
+.glow-progress{height:8px;background:#1a1a28;border-radius:999px;overflow:hidden;margin:14px 0 20px;
+  box-shadow:inset 0 0 8px rgba(0,0,0,.6)}
+.glow-progress i{display:block;height:100%;width:0;border-radius:999px;
+  background:linear-gradient(90deg,#ffd23f,#ff7a1a,#ff2d2d);
+  box-shadow:0 0 14px rgba(255,122,26,.8);transition:width .35s ease}
+
+/* ---------- Panel stage ---------- */
+.panel-stage{position:relative;min-height:480px}
+.panel{
+  position:relative;overflow:hidden;border-radius:22px;
+  border:1px solid #26262e;aspect-ratio:16/11;min-height:440px;
+  box-shadow:0 0 44px rgba(255,122,26,.20),0 24px 60px rgba(0,0,0,.55);
+  cursor:pointer;
+}
+/* Panel entrance animation (re-triggered per panel by JS) */
+.panel.anim{animation:panelIn .55s cubic-bezier(.22,.9,.28,1)}
+@keyframes panelIn{
+  from{opacity:0;transform:translateX(46px) scale(.985)}
+  to{opacity:1;transform:translateX(0) scale(1)}
+}
+.panel.anim-back{animation:panelInBack .45s cubic-bezier(.22,.9,.28,1)}
+@keyframes panelInBack{
+  from{opacity:0;transform:translateX(-46px) scale(.985)}
+  to{opacity:1;transform:translateX(0) scale(1)}
+}
+@media (max-width:640px){ .panel{aspect-ratio:auto;min-height:560px} }
+
+/* Panel background layers (set per-panel via inline style classes p1..p5) */
+.p-bg{position:absolute;inset:0}
+.p1{background:
+  radial-gradient(3px 3px at 12% 22%, #fff 50%, transparent 51%),
+  radial-gradient(2px 2px at 32% 68%, #cfe4ff 50%, transparent 51%),
+  radial-gradient(2px 2px at 58% 14%, #fff 50%, transparent 51%),
+  radial-gradient(3px 3px at 74% 40%, #e8d8ff 50%, transparent 51%),
+  radial-gradient(2px 2px at 88% 74%, #fff 50%, transparent 51%),
+  radial-gradient(2px 2px at 44% 38%, #ffe9a8 50%, transparent 51%),
+  linear-gradient(180deg,#050510 0%,#0b1030 45%,#1b1440 75%,#06060f 100%)}
+.p1::after{ /* town silhouette */
+  content:"";position:absolute;left:0;right:0;bottom:0;height:34%;
+  background:
+    linear-gradient(180deg,transparent 0 18%, #020208 18%),
+    repeating-linear-gradient(90deg,#020208 0 46px,transparent 46px 58px,#020208 58px 96px,transparent 96px 104px);
+  -webkit-mask:linear-gradient(180deg,transparent 18%,#000 18%);
+          mask:linear-gradient(180deg,transparent 18%,#000 18%);
+  opacity:.95;
+}
+.p2{background:
+  radial-gradient(600px 260px at 50% 108%, rgba(45,212,191,.28), transparent 70%),
+  radial-gradient(3px 3px at 20% 30%, #fff 50%, transparent 51%),
+  radial-gradient(2px 2px at 66% 20%, #cfe4ff 50%, transparent 51%),
+  radial-gradient(2px 2px at 82% 56%, #fff 50%, transparent 51%),
+  linear-gradient(180deg,#030309 0%,#0d0a26 55%,#160f38 100%)}
+.p2::before{ /* the signal beam */
+  content:"";position:absolute;left:50%;top:6%;width:120px;height:96%;
+  transform:translateX(-50%);
+  background:linear-gradient(180deg,rgba(45,212,191,0) 0%,rgba(45,212,191,.5) 55%,rgba(45,212,191,.9) 100%);
+  filter:blur(10px);animation:beamPulse 2.6s ease-in-out infinite;
+}
+@keyframes beamPulse{0%,100%{opacity:.65}50%{opacity:1}}
+.p2::after{ /* water tower silhouette */
+  content:"";position:absolute;left:50%;bottom:0;width:150px;height:44%;transform:translateX(-50%);
+  background:#020208;
+  clip-path:polygon(8% 100%,8% 34%,0 34%,50% 0,100% 34%,92% 34%,92% 100%);
+}
+.p3{background:
+  radial-gradient(2px 2px at 14% 18%, #fff 50%, transparent 51%),
+  radial-gradient(2px 2px at 70% 12%, #cfe4ff 50%, transparent 51%),
+  radial-gradient(3px 3px at 88% 44%, #fff 50%, transparent 51%),
+  linear-gradient(180deg,#04040c 0%,#141126 60%,#241547 100%)}
+.p3::after{ /* tower rungs */
+  content:"";position:absolute;left:50%;bottom:0;width:120px;height:100%;transform:translateX(-50%);
+  background:repeating-linear-gradient(180deg,transparent 0 34px,#000 34px 40px);
+  -webkit-mask:linear-gradient(90deg,transparent 42%,#000 42% 58%,transparent 58%);
+          mask:linear-gradient(90deg,transparent 42%,#000 42% 58%,transparent 58%);
+  opacity:.85;
+}
+.p4{background:
+  radial-gradient(900px 420px at 50% 118%, rgba(255,233,168,.5), transparent 65%),
+  radial-gradient(420px 200px at 50% 108%, rgba(255,210,63,.55), transparent 70%),
+  radial-gradient(2px 2px at 24% 20%, #fff 50%, transparent 51%),
+  radial-gradient(2px 2px at 76% 26%, #ffe9a8 50%, transparent 51%),
+  linear-gradient(180deg,#060614 0%,#101a3a 55%,#3a2a10 100%)}
+.p4::before{ /* rising light halo */
+  content:"";position:absolute;left:50%;bottom:-30%;width:420px;height:420px;transform:translateX(-50%);
+  background:radial-gradient(circle,rgba(255,243,196,.95) 0%,rgba(255,210,63,.45) 38%,transparent 68%);
+  filter:blur(6px);animation:haloBreathe 3.4s ease-in-out infinite;
+}
+@keyframes haloBreathe{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.08)}}
+.p5{background:
+  radial-gradient(700px 320px at 50% 118%, rgba(255,159,28,.55), transparent 66%),
+  radial-gradient(2px 2px at 30% 16%, #fff 50%, transparent 51%),
+  linear-gradient(180deg,#2b1a4d 0%,#7a2f5e 38%,#ff9f1c 72%,#ffd23f 100%)}
+.p5::after{ /* sun + town lights */
+  content:"";position:absolute;left:50%;bottom:6%;width:150px;height:150px;transform:translateX(-50%);
+  background:radial-gradient(circle,#fff8dc 0%,#ffd23f 45%,rgba(255,159,28,.4) 70%,transparent 72%);
+  filter:blur(2px);
+}
+
+/* Twinkling star dust overlay */
+.stars{position:absolute;inset:0;pointer-events:none;animation:twinkle 4s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.85}50%{opacity:.45}}
+
+/* Panel caption bar */
+.panel-cap{
+  position:absolute;left:16px;right:16px;top:14px;z-index:5;
+  font-family:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:clamp(1.5rem,4.4vw,2.3rem);
+  letter-spacing:.06em;color:#fff;text-shadow:0 0 18px rgba(255,122,26,.9),3px 3px 0 #000;
+}
+.panel-cap .pg{
+  display:block;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:.68rem;font-weight:800;
+  letter-spacing:.22em;text-transform:uppercase;color:#ffd23f;
+  text-shadow:0 0 10px rgba(255,210,63,.8);margin-bottom:4px;
+}
+
+/* ==========================================================================
+   THE BUBBLE SYSTEM
+   ========================================================================== */
+.bubble-layer{position:absolute;inset:0;z-index:4;pointer-events:none}
+.bubble{
+  --c:#2dd4bf; /* signature color — set inline per character */
+  position:absolute;pointer-events:auto;cursor:default;
+  max-width:min(64%,330px);padding:14px 18px 16px;
+  color:#fdfbf4;font-size:.98rem;line-height:1.5;font-weight:600;
+  animation:bubblePop .5s cubic-bezier(.2,1.4,.4,1) backwards;
+}
+.bubble:nth-child(2){animation-delay:.18s}
+.bubble:nth-child(3){animation-delay:.36s}
+.bubble:nth-child(4){animation-delay:.54s}
+@keyframes bubblePop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+
+.bubble .who{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--c);margin-bottom:6px;text-shadow:0 0 10px var(--c);
+}
+.avatar{
+  width:22px;height:22px;border-radius:50%;flex:0 0 22px;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:.62rem;font-weight:800;color:#0b0b12;background:var(--c);
+  box-shadow:0 0 10px var(--c),0 0 3px var(--c);
+}
+.bubble .line{margin:0}
+
+/* ---- 1. HERO — rounded bold ---- */
+.b-hero{
+  background:rgba(10,10,22,.92);
+  border:3px solid var(--c);border-radius:26px;
+  box-shadow:0 0 22px var(--c),0 0 6px var(--c),inset 0 0 16px rgba(255,255,255,.04);
+}
+.b-hero::after{ /* tail */
+  content:"";position:absolute;left:34px;bottom:-13px;width:20px;height:20px;
+  background:rgba(10,10,22,.92);border-right:3px solid var(--c);border-bottom:3px solid var(--c);
+  transform:rotate(45deg);box-shadow:4px 4px 10px var(--c);
+}
+.b-hero.tail-right::after{left:auto;right:34px}
+
+/* ---- 2. VILLAIN — jagged / spiked ---- */
+.b-villain{
+  padding:6px; /* this padding becomes the colored "border" */
+  background:var(--c);
+  clip-path:polygon(2% 18%,12% 4%,24% 14%,36% 2%,48% 12%,60% 3%,72% 13%,84% 4%,96% 15%,92% 32%,100% 46%,91% 58%,98% 74%,86% 84%,72% 78%,60% 92%,47% 82%,34% 94%,22% 83%,8% 90%,4% 74%,12% 62%,1% 48%,10% 34%);
+  filter:drop-shadow(0 0 14px var(--c)) drop-shadow(0 0 4px var(--c));
+}
+.b-villain > .in{
+  background:#12060c;
+  clip-path:polygon(2% 18%,12% 4%,24% 14%,36% 2%,48% 12%,60% 3%,72% 13%,84% 4%,96% 15%,92% 32%,100% 46%,91% 58%,98% 74%,86% 84%,72% 78%,60% 92%,47% 82%,34% 94%,22% 83%,8% 90%,4% 74%,12% 62%,1% 48%,10% 34%);
+  padding:16px 20px 18px;
+}
+.b-villain .who{color:var(--c)}
+
+/* ---- 3. COSMIC / NARRATOR — wispy cloud ---- */
+.b-cosmic{
+  background:rgba(8,10,28,.88);
+  border:2.5px solid var(--c);
+  border-radius:48% 52% 55% 45% / 58% 46% 54% 48%;
+  box-shadow:0 0 26px var(--c),0 0 8px var(--c),inset 0 0 22px rgba(143,184,255,.08);
+  animation:bubblePop .5s cubic-bezier(.2,1.4,.4,1) backwards,cosmicFloat 5s ease-in-out infinite;
+  font-style:italic;
+}
+.b-cosmic::before{ /* halo ring */
+  content:"";position:absolute;inset:-14px;border-radius:50%;
+  border:1.5px dashed var(--c);opacity:.5;animation:haloSpin 14s linear infinite;
+  pointer-events:none;
+}
+@keyframes haloSpin{to{transform:rotate(360deg)}}
+@keyframes cosmicFloat{0%,100%{margin-top:0}50%{margin-top:-7px}}
+.b-cosmic.holy{ /* reserved for Jesus / The Light — extra halo */
+  box-shadow:0 0 34px var(--c),0 0 12px #ffd23f,inset 0 0 26px rgba(255,243,196,.14);
+}
+.b-cosmic.holy::after{
+  content:"";position:absolute;top:-26px;left:50%;transform:translateX(-50%);
+  width:64px;height:16px;border-radius:50%;
+  border:3px solid #ffd23f;border-bottom:0;
+  box-shadow:0 0 16px #ffd23f;opacity:.95;
+}
+
+/* ---- 4. TECH / AI — angular ---- */
+.b-tech{
+  padding:5px;background:var(--c);
+  clip-path:polygon(0 0,calc(100% - 26px) 0,100% 26px,100% 100%,26px 100%,0 calc(100% - 26px));
+  filter:drop-shadow(0 0 13px var(--c)) drop-shadow(0 0 4px var(--c));
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+.b-tech > .in{
+  background:#0a0f14 repeating-linear-gradient(0deg,transparent 0 5px,rgba(255,255,255,.025) 5px 6px);
+  clip-path:polygon(0 0,calc(100% - 26px) 0,100% 26px,100% 100%,26px 100%,0 calc(100% - 26px));
+  padding:15px 20px 17px;position:relative;
+}
+.b-tech > .in::before,.b-tech > .in::after{
+  content:"";position:absolute;width:14px;height:14px;border:2px solid var(--c);
+}
+.b-tech > .in::before{top:8px;left:10px;border-right:0;border-bottom:0}
+.b-tech > .in::after{bottom:8px;right:10px;border-left:0;border-top:0}
+
+/* SFX burst — not a character bubble, pure impact */
+.sfx{
+  position:absolute;left:50%;top:44%;transform:translate(-50%,-50%) rotate(-4deg);
+  font-family:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:clamp(2.6rem,9vw,4.6rem);
+  letter-spacing:.1em;color:#fff;z-index:4;pointer-events:none;white-space:nowrap;
+  text-shadow:0 0 26px var(--c,#ff2f4e),0 0 8px var(--c,#ff2f4e),4px 4px 0 #000;
+  animation:sfxHit .6s cubic-bezier(.2,1.6,.4,1) backwards;
+}
+@keyframes sfxHit{from{opacity:0;transform:translate(-50%,-50%) rotate(-4deg) scale(2.4)}to{opacity:1;transform:translate(-50%,-50%) rotate(-4deg) scale(1)}}
+
+/* ---------- Nav / progress / end ---------- */
+.glow-nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px;gap:12px}
+.glow-btn{
+  font-weight:800;font-size:.95rem;padding:13px 30px;border-radius:999px;border:0;cursor:pointer;
+  transition:transform .15s,box-shadow .2s;
+}
+.glow-btn:hover{transform:translateY(-2px)}
+.btn-prev{background:#14141f;color:#fff;border:2px solid #2a2a3a}
+.btn-next{
+  background:linear-gradient(90deg,#ffd23f,#ff7a1a);color:#191104;
+  box-shadow:0 0 22px rgba(255,210,63,.5);
+}
+.btn-next:hover{box-shadow:0 0 34px rgba(255,210,63,.75)}
+.glow-count{color:#9aa0b0;font-weight:700;font-size:.9rem;letter-spacing:.08em;white-space:nowrap}
+
+.glow-end{
+  text-align:center;padding:56px 26px;border-radius:22px;
+  background:radial-gradient(ellipse at center,#1a1408 0%,#050508 70%);
+  border:1px solid #3a2a10;box-shadow:0 0 44px rgba(255,210,63,.18);
+}
+.glow-end h2{font-size:2.6rem;background:linear-gradient(180deg,#ffffff 0%,#e8e8ec 42%,#9aa0b0 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;text-shadow:0 0 24px rgba(255,210,63,.6);margin-bottom:14px}
+.glow-end p{color:#9aa0b0;max-width:34em;margin:0 auto 22px;line-height:1.7}
+.glow-end .lane-note{
+  display:inline-block;margin-top:6px;font-size:.75rem;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:#3fae5a;border:1px solid #3fae5a;border-radius:999px;padding:6px 16px;
+}
+
+.glow-foot{
+  max-width:860px;margin:0 auto;padding:26px 20px 40px;text-align:center;
+  color:#9aa0b0;font-size:.8rem;
+}
+.glow-foot a{color:#ffd23f;font-weight:700}
+.hint{color:#9aa0b0;font-size:.78rem;margin-top:10px}
+
+/* Bubble positions are set per-bubble via inline style left/top from JS data.
+   Keep bubbles inside the panel on small screens. */
+@media (max-width:640px){
+  .bubble{max-width:82%;font-size:.9rem;padding:12px 15px 14px}
+  .b-villain > .in,.b-tech > .in{padding:12px 15px 14px}
+}

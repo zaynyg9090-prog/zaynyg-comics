@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment Successful — Zaynyg World Comics</title>
+<meta name="description" content="Your Zaynyg World Comics purchase succeeded. Enter your unlock code to read.">
+<meta name="robots" content="noindex,nofollow">
+<link rel="stylesheet" href="../styles.css">
+<link rel="icon" href="../favicon.ico">
+<meta name="theme-color" content="#050508">
+<style>
+.done-shell{max-width:600px;margin:0 auto;padding:40px 20px 70px;text-align:center}
+.done-card{background:#14141f;border:1px solid #2a2a44;border-radius:18px;padding:38px 30px}
+.done-card.ok{border-color:#2dd4bf;box-shadow:0 0 50px rgba(45,212,191,.12)}
+.done-emoji{font-size:3.4rem}
+.done-card h1{font-size:2.2rem;margin:.4em 0}
+.done-card p{color:var(--muted);line-height:1.65;margin:.6em 0}
+.steps{text-align:left;background:#050508;border:1px solid #2a2a44;border-radius:12px;
+  padding:18px 20px;margin:20px 0}
+.steps li{margin:.55em 0;line-height:1.55;color:#e8e4ff}
+.code-row{display:flex;gap:8px;margin:14px 0 4px}
+.code-row input{flex:1;min-height:52px;border-radius:12px;border:2px solid #3a3a55;background:#050508;color:#fff;
+  padding:0 14px;font-size:1.05rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.code-row button{min-height:52px;padding:0 24px;border-radius:12px;border:0;background:var(--gold);color:#191104;
+  font-weight:800;font-size:1rem;cursor:pointer}
+.code-err{display:none;color:#ff8fa3;font-size:.88rem;margin-top:8px;font-weight:700}
+.big-btn{display:inline-flex;align-items:center;justify-content:center;min-height:56px;width:100%;
+  padding:16px 24px;font-size:1.1rem;font-weight:800;border-radius:999px;background:var(--gold);color:#191104;
+  text-decoration:none;margin-top:14px}
+.ghost-link{display:inline-block;margin-top:16px;color:var(--teal);font-weight:700;min-height:48px;padding:12px}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="wrap nav-inner">
+  <a class="brand" href="../index.html"><span class="zap">⚡</span> ZAYNYG WORLD COMICS</a>
+  <div class="nav-links">
+    <a href="../index.html">Home</a>
+    <a href="../library.html">Library</a>
+    <a href="../reader.html">Read Free</a>
+    <a href="../store.html">Store</a>
+  </div>
+</div></nav>
+
+<main class="done-shell">
+  <div class="done-card ok" id="card">
+    <div class="done-emoji">🎉</div>
+    <h1 class="display">PAYMENT SUCCESSFUL!</h1>
+    <p id="issueLine">Thank you for supporting original comics — straight from the creator.</p>
+
+    <ol class="steps">
+      <li><strong>Find your unlock code</strong> — it's on your Stripe confirmation page
+        <!-- [TODO: Jose's Stripe setup — paste each issue's code into that Payment Link's
+             confirmation-page custom message in the Stripe Dashboard (see PAYWALL-DESIGN.md §6).] -->
+        and in your email receipt.</li>
+      <li><strong>Enter it below</strong> — one time. Your device remembers it.</li>
+      <li><strong>Read!</strong> Your issue unlocks instantly, no login needed.</li>
+    </ol>
+
+    <div class="code-row">
+      <input id="codeInput" inputmode="text" autocomplete="off" autocapitalize="characters"
+        placeholder="ZW1-XXXX-XXXX" aria-label="Unlock code">
+      <button id="codeGo">Unlock</button>
+    </div>
+    <div class="code-err" id="codeErr">That code didn't match — check your receipt and try again.</div>
+    <a class="big-btn" id="readBtn" href="../paid-reader.html" style="display:none">📖 READ MY ISSUE →</a>
+
+    <a class="ghost-link" href="../library.html">← Back to the Library</a>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <div><strong>⚡ ZAYNYG WORLD COMICS</strong><br>Original comics &amp; superheroes by Zaynyg World.</div>
+  <div>© 2026 Zaynyg World. All rights reserved.</div>
+</div></footer>
+
+<script src="pay-config.js"></script>
+<script src="unlock.js"></script>
+<script>
+/* Post-payment landing. Stripe redirects here:
+   payments/success.html?issue=<sku>
+   [TODO: set this exact redirect URL per Payment Link in the Stripe Dashboard
+    AFTER Jose completes payout onboarding — "After payment → take customers
+    to your website". Until then this page is staged and unreachable from checkout.] */
+(function(){
+  "use strict";
+  var sku = new URLSearchParams(location.search).get('issue');
+  var issue = window.ZW_PAY.getIssue(sku);
+  if(issue){
+    document.title = "Payment Successful — " + issue.series + " " + issue.title;
+    document.getElementById('issueLine').innerHTML =
+      'Thank you for supporting original comics — <strong style="color:#fff">' +
+      issue.series + ' ' + issue.title.replace(/</g,'&lt;') +
+      '</strong> is yours.';
+  }
+  function tryCode(){
+    var v = document.getElementById('codeInput').value;
+    if(!issue){ document.getElementById('codeErr').style.display='block'; return; }
+    if(window.ZW_UNLOCK.validateCode(sku, v)){
+      window.ZW_UNLOCK.unlock(sku);
+      document.getElementById('codeErr').style.display='none';
+      var rb = document.getElementById('readBtn');
+      rb.href = "../paid-reader.html?issue=" + encodeURIComponent(sku);
+      rb.style.display='inline-flex';
+      rb.focus();
+    } else {
+      document.getElementById('codeErr').style.display='block';
+    }
+  }
+  document.getElementById('codeGo').addEventListener('click', tryCode);
+  document.getElementById('codeInput').addEventListener('keydown', function(e){
+    if(e.key==='Enter') tryCode();
+  });
+})();
+</script>
+</body>
+</html>

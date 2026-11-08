@@ -4,13 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Store — Zaynyg World Comics</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<meta name="description" content="The Zaynyg World Comics store — support the creator directly. Original comics, collections, and more from the Zaynyg World multiverse.">
 <link rel="stylesheet" href="styles.css">
 <link rel="icon" href="favicon.ico">
 <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0b0b12">
+<meta name="theme-color" content="#050508">
 </head>
 <body>
 
@@ -19,11 +18,14 @@
   <div class="nav-links">
     <a href="index.html">Home</a>
     <a href="library.html">Library</a>
+    <a href="faith.html">✝️ Faith</a>
     <a href="reader.html">Read Free</a>
     <a href="store.html" class="active">Store</a>
     <a href="https://zaynyg-world-dynasty.pages.dev">Blog</a>
   </div>
 </div></nav>
+
+<div class="burst-banner"><img src="assets/sticker2693811848392836206_2_rbzu.png" alt="Zaynyg World burst — Earth globes bursting from a comic starburst"></div>
 
 <section class="section"><div class="wrap">
   <div class="section-head"><h2>🛒 The Store</h2></div>
@@ -36,7 +38,7 @@
   <div class="feat" style="margin-top:34px">
     <div class="ico">🔒</div>
     <h3>How buying will work</h3>
-    <p>At launch, checkout runs on a free-to-start payment link (small cut per sale, zero monthly fees). You get DRM-free files to keep forever: read in the app, or download the CBZ/PDF. No subscriptions, no lock-in.</p>
+    <p>At launch, checkout runs through the store's Shopify Payments (cards, Shop Pay, Apple Pay, Google Pay) — no new account, no new monthly fee. Your download link arrives at checkout and by email: DRM-free files, yours to keep. Issues marked “Coming Soon” are still being drawn and can’t be bought yet. No subscriptions, no lock-in.</p>
   </div>
 </div></section>
 
@@ -47,35 +49,63 @@
 </div></div>
 
 
-<div class="cross-promo" style="text-align:center;padding:1.2rem;color:#9d8cff;font-size:.9rem;border-top:1px solid #26263a;">
-  Love the comics? Wear the universe — <strong style="color:#ff4d6d;">34 Zaynyg World clothing lines dropping soon</strong> &middot;
-  <a href="https://zsbzba-dy.myshopify.com" style="color:#2dd4bf;">Shop</a>
+<div class="cross-promo" style="text-align:center;padding:1.2rem;color:#9aa0b0;font-size:.9rem;border-top:1px solid #26263a;">
+  Love the comics? Wear the universe — <strong style="color:#ffd23f;">34 Zaynyg World clothing lines dropping soon</strong> &middot;
+  <a href="https://zsbzba-dy.myshopify.com" style="color:#ffd23f;">Shop</a>
 </div>
 
 <footer><div class="wrap">
-  <div><strong>⚡ ZAYNYG WORLD COMICS</strong><br>Original comics &amp; superheroes by Zaynyg World.</div>
+  <div><strong>⚡ ZAYNYG WORLD COMICS</strong><br>Original comics &amp; superheroes by Zaynyg World.<br>📍 Zaynyg World · 1655 Lime St, Fernandina Beach, FL 32034</div>
   <div>© 2026 Zaynyg World. All rights reserved.</div>
-  <div><strong>🛍️ OUR STORES</strong><br>
-  <a href="https://zsbzba-dy.myshopify.com" style="color:#2dd4bf;">Toy Store</a> &middot;
-  <a href="https://app.amazecommerce.com/shop/zaynygworld" style="color:#2dd4bf;">Amaze Shop</a> &middot;
-  <a href="https://zaynyg8.gumroad.com/" style="color:#2dd4bf;">Ebooks</a><br>
-  Merch &mdash; <em>dropping soon</em> &middot;
-  <a href="https://zaynyg-world-dynasty.pages.dev" style="color:#2dd4bf;">Zaynyg World Dynasty</a></div>
+  <div><strong>🌐 OUR FAMILY OF SITES</strong><br>
+  <a href="https://zsbzba-dy.myshopify.com" style="color:#ffd23f;">Toy Store</a> &middot;
+  <a href="https://zsbzba-dy.myshopify.com" style="color:#ffd23f;">Ebooks</a> &middot;
+  <a href="https://app.amazecommerce.com/shop/zaynygworld" style="color:#ffd23f;">Amaze Shop</a> &middot;
+  <a href="https://zsbzba-dy.myshopify.com" style="color:#ffd23f;">Merch</a><br>
+  <a href="https://zaynyg-world-dynasty.pages.dev" style="color:#ffd23f;">Dynasty Blog</a> &middot;
+  <a href="https://zaynyg-comics.pages.dev" style="color:#ffd23f;">Comics App</a></div>
 </div></footer>
 
 <script src="data.js"></script>
+<script src="payments/pay-config.js"></script>
 <script>
+/* Store → pay-config SKU map. Free #0 issues (cta 'read') never map here and never get a checkout button. */
+const PAY_SKU = {
+  'OVERDUE|#2 — The Audit': 'overdue-2',
+  'STAR CLASH|#1 — Ascendant Zero: The Invitation': 'star-clash-az-1',
+  'STAR CLASH|#1 — Battle for Every Planet': 'star-clash-1',
+  'Emberfall|#1 — Spark of the Comet Wolf': 'emberfall-1',
+  'North Park|#1 — The Great Snow Day Heist': 'north-park-1',
+  'Santa vs. the Zombie Apocalypse|Holiday Special': 'santa-zombie-special'
+};
+function skuFor(it){ return PAY_SKU[it.series + '|' + it.issue] || null; }
+/* Nov 8, 2026: a paid issue whose pages aren't drawn yet shows "Coming Soon", never a buy button. */
+function ready(it){
+  var sku = skuFor(it);
+  if(!sku || !window.ZW_PAY || !window.ZW_PAY.hasContent) return true;
+  return window.ZW_PAY.hasContent(window.ZW_PAY.getIssue(sku));
+}
+function payFor(it){
+  var sku = PAY_SKU[it.series + '|' + it.issue];
+  if(!sku || !window.ZW_PAY) return null;
+  var issue = window.ZW_PAY.getIssue(sku);
+  return (issue && window.ZW_PAY.isLive(issue)) ? issue : null;
+}
 const box = document.getElementById('issues');
 box.innerHTML = window.ZAYNYG_ISSUES.map((it,idx)=>`
   <div class="issue">
-    <img src="${it.cover}" alt="${it.series} cover" loading="lazy">
+    <img src="${it.cover}" alt="${it.series} cover" loading="lazy" onerror="this.onerror=null;this.src='assets/sticker2693811848392836206_2_rbzu.png'">
     <div>
       <h3>${it.series} <span style="color:var(--muted);font-weight:600">— ${it.issue}</span></h3>
       <div class="meta">${it.note}</div>
       <span class="price ${it.price===0?'free':''}">${it.price===0?'FREE':'$'+it.price.toFixed(2)}</span>
       ${it.cta==='read'
-        ? `<a class="btn btn-gold" href="reader.html">Read Now</a>`
-        : `<button class="btn btn-ghost" data-buy="${idx}">${it.price===0?'Get Free Issue':'Buy Issue'}</button>`}
+        ? `<a class="btn btn-gold" href="${it.href||'reader.html'}">Read Now</a>`
+        : (payFor(it)
+          ? `<a class="btn btn-gold" href="${payFor(it).payLink}">Buy Issue — $${it.price.toFixed(2)}</a>`
+          : (ready(it)
+            ? `<button class="btn btn-ghost" data-buy="${idx}">${it.price===0?'Get Free Issue':'Buy Issue'}</button>`
+            : `<span class="btn btn-ghost" style="opacity:.7;cursor:default" title="Still being drawn">🎨 Coming Soon</span>`))}
     </div>
   </div>`).join('');
 

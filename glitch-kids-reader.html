@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glitch Kids #0 — Portal Primer — Zaynyg World Comics Reader</title>
+<meta name="description" content="Read GLITCH KIDS #0: Portal Primer FREE — the night Zay's Turbo Plunger 9000 first opened the toilet portal. Original all-ages comedy.">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#050508">
+</head>
+<body>
+
+<nav class="nav"><div class="wrap nav-inner">
+  <a class="brand" href="index.html"><span class="zap">⚡</span> ZAYNYG WORLD COMICS</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="library.html">Library</a>
+    <a href="faith.html">✝️ Faith</a>
+    <a href="reader.html">Read Free</a>
+    <a href="store.html">Store</a>
+    <a href="https://zaynyg-world-dynasty.pages.dev">Blog</a>
+  </div>
+</div></nav>
+
+<div class="reader-shell">
+  <div class="reader-top">
+    <a href="library.html#glitch-kids">← GLITCH KIDS</a>
+    <span style="color:var(--muted);font-weight:700">Issue #0 — Portal Primer <span style="color:#2dd4bf">· FREE</span></span>
+  </div>
+  <div class="progress"><i id="bar"></i></div>
+
+  <div id="stage"></div>
+
+  <div class="reader-nav">
+    <button class="btn btn-ghost" id="prev">← Back</button>
+    <span class="count" id="count"></span>
+    <button class="btn btn-gold" id="next">Next →</button>
+  </div>
+</div>
+
+<div class="cross-promo" style="text-align:center;padding:1.2rem;color:#9d8cff;font-size:.9rem;border-top:1px solid #26263a;">
+  Love the comics? Wear the universe — <strong style="color:#ff4d6d;">34 Zaynyg World clothing lines dropping soon</strong> &middot;
+  <a href="https://zsbzba-dy.myshopify.com" style="color:#2dd4bf;">Shop</a>
+</div>
+
+<footer><div class="wrap">
+  <div><strong>⚡ ZAYNYG WORLD COMICS</strong><br>Original comics &amp; superheroes by Zaynyg World.</div>
+  <div>© 2026 Zaynyg World. All rights reserved.</div>
+  <div><strong>🌐 OUR FAMILY OF SITES</strong><br>
+  <a href="https://zsbzba-dy.myshopify.com" style="color:#2dd4bf;">Toy Store</a> &middot;
+  <a href="https://zsbzba-dy.myshopify.com" style="color:#2dd4bf;">Ebooks</a> &middot;
+  <a href="https://app.amazecommerce.com/shop/zaynygworld" style="color:#2dd4bf;">Amaze Shop</a> &middot;
+  <a href="https://zsbzba-dy.myshopify.com" style="color:#2dd4bf;">Merch</a><br>
+  <a href="https://zaynyg-world-dynasty.pages.dev" style="color:#2dd4bf;">Dynasty Blog</a> &middot;
+  <a href="https://zaynyg-comics.pages.dev" style="color:#2dd4bf;">Comics App</a></div>
+</div></footer>
+
+<script>
+/* Original mini-comic: GLITCH KIDS #0 — "Portal Primer" (free hook, all ages) */
+const PANELS = [
+  { img:"assets/covers/cover-glitch-kids.webp",
+    cap:"GLITCH KIDS #0 — Portal Primer. One toilet portal. Infinite bad decisions. The night it all started: Zay's garage, 8:47 PM." },
+  { img:"assets/panels/gk0-panel-1.webp",
+    cap:"Zay straps the Turbo Plunger 9000 to the toilet. Luna: \"Why is it attached to the toilet.\" Zay: \"Science.\"" },
+  { img:"assets/panels/gk0-panel-2.webp",
+    cap:"FWOOM! The bowl swirls into a glowing portal. Luna: \"That is NOT what toilets do!\" Zay, taking notes: \"Noted. Update the manual.\"" },
+  { img:"assets/panels/gk0-panel-3.webp",
+    cap:"A tiny gremlin hand reaches out of the portal and grabs Luna's chips. \"YOINK.\" Luna: \"Did the toilet just steal my chips?\"" },
+  { img:"assets/panels/gk0-panel-4.webp",
+    cap:"The bathroom pixelates. Wi-Fi lightning crackles. Blix barks at his own glitching tail. Zay: \"I think we just invented the worst idea ever.\"" }
+];
+let i = 0;
+const stage = document.getElementById('stage');
+const bar = document.getElementById('bar');
+const count = document.getElementById('count');
+const prevB = document.getElementById('prev');
+const nextB = document.getElementById('next');
+
+function render(){
+  const p = PANELS[i];
+  if(i < PANELS.length){
+    const inner = `<img src="${p.img}" alt="Glitch Kids #0 panel ${i+1}">`;
+    stage.innerHTML = `
+      <div class="panel-card" id="panelcard" title="Tap to continue">
+        ${inner}
+        <div class="panel-caption"><span class="n">Panel ${i+1} of ${PANELS.length}</span>${p.cap}</div>
+      </div>`;
+    document.getElementById('panelcard').addEventListener('click', ()=>go(1));
+    count.textContent = (i+1)+' / '+PANELS.length;
+    bar.style.width = ((i+1)/PANELS.length*100)+'%';
+    prevB.style.visibility = i===0 ? 'hidden' : 'visible';
+    nextB.textContent = i===PANELS.length-1 ? 'Finish →' : 'Next →';
+  } else {
+    bar.style.width = '100%';
+    count.textContent = 'Done';
+    stage.innerHTML = `
+      <div class="panel-card"><div class="end-card">
+        <h2 class="display">TO BE CONTINUED…</h2>
+        <p>You just read the free preview of <b>GLITCH KIDS #0 — Portal Primer</b>.<br>
+        Next up: <b>GLITCH KIDS #4 "Attack of the Wi-Fi Gremlins"</b> — the gremlins are coming THROUGH.<br>
+        Full issues drop soon in the store.</p>
+        <a class="btn btn-gold" href="store.html">Get Full Issues in the Store</a><br><br>
+        <a href="library.html" style="color:var(--gold);font-weight:700">← Back to the Library</a>
+      </div></div>`;
+    prevB.style.visibility = 'visible';
+    nextB.style.visibility = 'hidden';
+  }
+}
+function go(d){
+  const n = i + d;
+  if(n < 0) return;
+  if(n > PANELS.length) return;
+  i = n;
+  nextB.style.visibility = 'visible';
+  render();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+prevB.addEventListener('click', ()=>go(-1));
+nextB.addEventListener('click', ()=>go(1));
+document.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight') go(1);
+  if(e.key==='ArrowLeft') go(-1);
+});
+render();
+</script>
+</body>
+</html>

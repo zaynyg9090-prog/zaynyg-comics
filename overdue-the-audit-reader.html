@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OVERDUE: THE GREAT FORECLOSURE #2 — The Audit — Zaynyg World Comics Reader</title>
+<meta name="description" content="OVERDUE: THE GREAT FORECLOSURE #2 'The Audit' — the Write-Offs face the Comptroller's cosmic audit. Paid issue. Original noir-superhero comics.">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#050508">
+<style>
+/* OVERDUE reader — ink-red/black/bone-white house style. PAID issue: content stays behind the paywall gate. */
+#pay-gate{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at center,#1a0508 0%,#050508 75%);padding:24px}
+.gate-card{max-width:540px;text-align:center;background:#14141f;border:2px solid #c8102e;border-radius:18px;
+  padding:44px 36px;box-shadow:0 0 60px rgba(200,16,46,.25)}
+.gate-card h1{font-size:2.4rem;margin:.2em 0 .4em}
+.gate-card p{color:var(--muted);line-height:1.6;margin-bottom:14px}
+.price-tag{font-size:2.6rem;font-weight:800;color:#fff;margin:10px 0}
+.gate-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+.btn-red{background:#c8102e;color:#fff;font-weight:800;padding:14px 30px;border-radius:999px;border:0;cursor:pointer;font-size:1rem}
+.btn-red:hover{transform:translateY(-2px)}
+.modal{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.7);align-items:center;justify-content:center;padding:24px}
+.modal.open{display:flex}
+.modal-box{background:#14141f;border:1px solid #c8102e;border-radius:16px;padding:34px;max-width:440px;text-align:center}
+.modal-box p{color:var(--muted);line-height:1.6}
+.page-head{padding:22px 24px 6px;border-bottom:1px solid #26263a}
+.page-head h2{font-size:1.9rem;margin:0}
+.page-head .n{color:var(--muted);font-weight:700;font-size:.85rem;letter-spacing:.08em}
+.dialog{padding:10px 24px}
+.dialog .who{display:inline-block;font-weight:800;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 12px;border-radius:999px;margin-bottom:6px}
+.dialog .who.v{background:#3a2c07;color:var(--gold)}
+.dialog .who.g{background:#0f3a22;color:#7dff8a}
+.dialog .who.m{background:#1c1c2e;color:#cfc3f5}
+.dialog .who.s{background:#2e1c1c;color:#ff9d9d}
+.dialog .who.d{background:#122a3d;color:#7dc4ff}
+.dialog .who.i{background:#2a2440;color:#b9a8ff}
+.dialog .who.p{background:#3d1608;color:#ffab6e}
+.dialog .who.c{background:#3a3a3a;color:#e8e8e8;border:2px solid #c8102e;letter-spacing:.14em}
+.dialog .who.a{background:#2a2a44;color:#cfc3f5}
+.dialog p{margin:0 0 14px;font-size:1.08rem;line-height:1.6;color:#f0ecff}
+.dialog p.cap{font-style:italic;color:#b9b0d8;border-left:3px solid #c8102e;padding-left:14px}
+.dialog p.sfx{font-family:'Bangers','Arial Black',sans-serif;font-size:2.2rem;letter-spacing:.08em;color:#c8102e;
+  text-shadow:0 0 18px rgba(200,16,46,.4);text-align:center;margin:18px 0}
+</style>
+</head>
+<body>
+
+<div id="pay-gate">
+  <div class="gate-card">
+    <div class="price-tag">🔒 $2.99</div>
+    <h1 class="display">PAID ISSUE</h1>
+    <p><strong style="color:#fff">OVERDUE: THE GREAT FORECLOSURE #2 — "The Audit"</strong> is a paid issue — the complete story, with 10 painted panels.</p>
+    <p><strong style="color:#2dd4bf">PAID — one-tap pay link coming.</strong> Checkout opens at launch; the pay-link workstream wires the real link.</p>
+    <div class="gate-btns">
+      <button class="btn-red" id="paybtn">Pay $2.99 — coming soon</button>
+      <a class="btn btn-ghost" href="store.html">Back to Store</a>
+    </div>
+    <p style="margin-top:18px"><a href="reader.html" style="color:var(--gold);font-weight:700">Read STAR CLASH #0 free instead →</a></p>
+  </div>
+</div>
+
+<div class="modal" id="modal"><div class="modal-box">
+  <h3 class="display">PAID — one-tap pay link coming</h3>
+  <p id="modal-text">"OVERDUE: THE GREAT FORECLOSURE #2 — The Audit" ($2.99) — checkout opens at launch. This issue isn't on sale yet. Thanks for being early. ⚡</p>
+  <button class="btn btn-gold" id="modal-close">Got it</button>
+</div></div>
+
+<div class="reader-shell" id="reader-shell" style="display:none">
+  <div class="reader-top">
+    <a href="store.html">← Store</a>
+    <span style="color:var(--muted);font-weight:700">OVERDUE — Issue #2 "The Audit" <span style="color:#c8102e">· PAID</span></span>
+  </div>
+  <div class="progress"><i id="bar"></i></div>
+  <div id="stage"></div>
+  <div class="reader-nav">
+    <button class="btn btn-ghost" id="prev">← Back</button>
+    <span class="count" id="count"></span>
+    <button class="btn btn-gold" id="next">Next →</button>
+  </div>
+</div>
+
+<script src="payments/pay-config.js"></script>
+<script>
+/* OVERDUE: THE GREAT FORECLOSURE #2 "The Audit" — PAID issue ($2.99).
+   Full story beats staged in PAGES below (abridged from the 22-page script at
+   ~/workspace/comics-universe/great-foreclosure-issue-2.md). The paywall gate stays up
+   until the pay-link workstream wires the real one-tap checkout. */
+const modal = document.getElementById('modal');
+(function(){
+  var issue = (window.ZW_PAY && window.ZW_PAY.getIssue('overdue-2')) || null;
+  if(issue && window.ZW_PAY.isLive(issue)){
+    var btn = document.getElementById('paybtn');
+    btn.textContent = 'Pay $2.99 — Buy now';
+    btn.addEventListener('click', function(){ window.location.href = issue.payLink; });
+  } else {
+    document.getElementById('paybtn').addEventListener('click', ()=>modal.classList.add('open'));
+  }
+})();
+document.getElementById('modal-close').addEventListener('click', ()=>modal.classList.remove('open'));
+modal.addEventListener('click', e=>{ if(e.target===modal) modal.classList.remove('open'); });
+
+const PAGES = [
+  { title:"PREVIOUSLY", img:"assets/panels/overdue2-panel-1.webp", blocks:[
+    {w:"", t:"Red-ink numerals appeared in the sky. Every person who ever borrowed a miracle saw their balance, written in fire over their own head. The city panicked. The Write-Offs — seven debtors who split the tab — did what they always do: they covered each other. Then the sky sent its auditor.", cap:true}
+  ]},
+  { title:"THE SKY BECAME PAPER", img:"assets/panels/overdue2-panel-2.webp", blocks:[
+    {w:"", t:"...AND IN AN INSTANT, THE SKY BECAME PAPER. NO FLIGHT. NO POWER. SUBJECTS: MARKED FOR REVIEW.", cap:true},
+    {w:"c", who:"THE COMPTROLLER", t:"FREEZE — SECTION 13. ALL POWERS SUSPENDED PENDING REVIEW."},
+    {w:"a", who:"MARA", t:"Third one this hour. City's gonna need bigger trash bags."},
+    {w:"v", who:"VIVIAN", t:"The house doesn't do stampedes. Stampedes are bad for business.", cap:true}
+  ]},
+  { title:"THE BACK ROOM", img:"assets/panels/overdue2-panel-3.webp", blocks:[
+    {w:"g", who:"GUS", t:"Doors are locked. Nobody borrowed anything on the way here, I trust."},
+    {w:"m", who:"MARCUS", t:"Twelve active redactions. Four come due this week. If the audit opens my file, it opens ALL of them. With interest."},
+    {w:"v", who:"VIVIAN", t:"No. We stand in line FIRST. The freeze lifts file by file as it processes. Whoever clears the audit gets their power back while the rest of the city is still grounded."},
+    {w:"p", who:"PRIYA", t:"And if somebody doesn't clear?"},
+    {w:"g", who:"GUS", t:"Then we do what we always do. We split the tab."}
+  ]},
+  { title:"THE AUDIT", img:"assets/panels/overdue2-panel-4.webp", blocks:[
+    {w:"c", who:"THE COMPTROLLER", t:"ASSESSMENT: CURRENT. NEXT."},
+    {w:"", t:"KA-CHING.", sfx:true},
+    {w:"", t:"Then the Comptroller opened Gus's file — and found a page with no corresponding debt. A coat. A bus fare. A Tuesday. No collateral. No interest. No paperwork at all.", cap:true},
+    {w:"g", who:"GUS", t:"That one's not a pawn, friend. That's a gift."},
+    {w:"c", who:"THE COMPTROLLER", t:"ERROR. ERROR. RECALCULATING."},
+    {w:"v", who:"VIVIAN", t:"It can't process gifts. Divide by zero. That's the whole strategy, and it just met it for the first time.", cap:true}
+  ]},
+  { title:"PRIYA'S FUSE", img:"assets/panels/overdue2-panel-5.webp", blocks:[
+    {w:"c", who:"THE COMPTROLLER", t:"FILE: RAMAN, PRIYA. YOU BURN YOURSELF AS FUEL. ASSESSMENT: —"},
+    {w:"", t:"Six hands on the desk. Six voices, overlapping:", cap:true},
+    {w:"a", who:"ALL", t:"We cover her. Split it. Put it on all of us. The tab's ours."},
+    {w:"c", who:"THE COMPTROLLER", t:"ERROR ERROR ERROR — ASSESSMENT: DEFERRED. PENDING... REVIEW."},
+    {w:"", t:"ka-ka-ka-KA-CHING.", sfx:true},
+    {w:"v", who:"VIVIAN", t:"It can audit a debt. It cannot audit a gift. And it just tried to audit seven at once.", cap:true}
+  ]},
+  { title:"THE RELAY", img:"assets/panels/overdue2-panel-6.webp", blocks:[
+    {w:"", t:"The Write-Offs move through the queue — not past it. Coats, repaired benches, un-dropped ice cream, sunk scaffolds, redacted noise. No paperwork. No pawn tickets.", cap:true},
+    {w:"", t:"A gift is a payment the Ledger can't receipt. The city is learning the team's trick by watching.", cap:true},
+    {w:"c", who:"THE COMPTROLLER", t:"STOP. HELPING. EACH. OTHER."},
+    {w:"v", who:"VIVIAN", t:"Make us."}
+  ]},
+  { title:"THE COMPTROLLER ADAPTS", img:"assets/panels/overdue2-panel-7.webp", blocks:[
+    {w:"c", who:"THE COMPTROLLER", t:"NEW RULING. GIFTS ARE NOT DEBTS. BUT ORGANIZING GIFTS — IS CONSPIRACY TO OBSTRUCT AN AUDIT."},
+    {w:"v", who:"VIVIAN", t:"It couldn't beat the trick. So it changed the game. That's what the house does when it's losing.", cap:true},
+    {w:"", t:"The Comptroller stamps a red circle around one address: 1140 Halstead Ave. Gus's pawnshop. The team's home.", cap:true},
+    {w:"g", who:"GUS", t:"...The shop's back-rent. To reality. I've been paying it in installments since before most of you were born."}
+  ]},
+  { title:"THE NOTICE", img:"assets/panels/overdue2-panel-8.webp", blocks:[
+    {w:"", t:"REPOSSESSION — 1140 HALSTEAD AVE. ACCOUNT: DELINQUENT (STRUCTURAL). ACTION: EFFECTIVE IMMEDIATELY.", cap:true},
+    {w:"g", who:"GUS", t:"I always knew the shop was borrowed. I just thought... I thought we had more time."},
+    {w:"v", who:"VIVIAN", t:"Tonight we find somewhere to sleep, and tomorrow — tomorrow we read the fine print on a repossessed reality."},
+    {w:"v", who:"VIVIAN", t:"The house always collects. So we split the tab. Even when the tab is the house.", cap:true}
+  ]},
+  { title:"THE CRAYON FILE", img:"assets/panels/overdue2-panel-9.webp", blocks:[
+    {w:"", t:"On the Comptroller's desk: a file with no name. Just a hand-drawn barcode. In crayon. Inside: a child's drawing. Seven stick figures holding hands. Underneath: \"THE RIGHT-AFTERS.\"", cap:true},
+    {w:"c", who:"THE COMPTROLLER", t:"THIS IS NOT A VALID FILING."},
+    {w:"", t:"...ka.", sfx:true},
+    {w:"", t:"It filed it under \"P.\" For pending. For the first time in the history of the Ledger, something was filed under pending that isn't a debt.", cap:true}
+  ]},
+  { title:"TONIGHT, IT COLLECTED OURS", img:"assets/panels/overdue2-panel-10.webp", blocks:[
+    {w:"v", who:"VIVIAN", t:"The house always collects. Tonight, it collected ours."},
+    {w:"v", who:"VIVIAN", t:"But here's what the house doesn't understand. We were never the shop. We're the tab. And the tab just went mobile."},
+    {w:"", t:"NEXT: THE GREAT FORECLOSURE #3 — \"ESTATE SALE.\" Escheat goes shopping. The Co-Signer opens his doors. And the Write-Offs learn what their home is really worth.", cap:true}
+  ]}
+];
+
+let i = 0;
+const stage = document.getElementById('stage');
+const bar = document.getElementById('bar');
+const count = document.getElementById('count');
+const prevB = document.getElementById('prev');
+const nextB = document.getElementById('next');
+
+function blockHTML(b){
+  if(b.sfx) return `<div class="dialog"><p class="sfx">${b.t}</p></div>`;
+  const capCls = b.cap ? ' cap' : '';
+  const who = b.who ? `<span class="who ${b.w}">${b.who}</span>` : '';
+  return `<div class="dialog">${who}<p class="${capCls.trim()}">${b.who?'"'+b.t+'"':b.t}</p></div>`;
+}
+function render(){
+  const p = PAGES[i];
+  if(i < PAGES.length){
+    stage.innerHTML = `
+      <div class="panel-card" id="panelcard" title="Tap to continue">
+        ${p.img?`<img src="${p.img}" alt="${p.title} — panel art">`:''}
+        <div class="page-head"><div class="n">Beat ${i+1} of ${PAGES.length}</div><h2 class="display">${p.title}</h2></div>
+        ${p.blocks.map(blockHTML).join('')}
+      </div>`;
+    document.getElementById('panelcard').addEventListener('click', ()=>go(1));
+    count.textContent = (i+1)+' / '+PAGES.length;
+    bar.style.width = ((i+1)/PAGES.length*100)+'%';
+    prevB.style.visibility = i===0 ? 'hidden' : 'visible';
+    nextB.textContent = i===PAGES.length-1 ? 'Finish →' : 'Next →';
+  } else {
+    bar.style.width = '100%';
+    count.textContent = 'Done';
+    stage.innerHTML = `
+      <div class="panel-card"><div class="end-card">
+        <h2 class="display">TO BE CONTINUED…</h2>
+        <p>You've reached the end of the staged beats for <b>OVERDUE: THE GREAT FORECLOSURE #2 — "The Audit"</b>.<br>
+        The complete issue is yours — thank you for backing the universe.</p>
+        <a class="btn btn-gold" href="store.html">← Back to the Store</a>
+      </div></div>`;
+    prevB.style.visibility = 'visible';
+    nextB.style.visibility = 'hidden';
+  }
+}
+function go(d){
+  const n = i + d;
+  if(n < 0 || n > PAGES.length) return;
+  i = n; nextB.style.visibility = 'visible'; render();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+prevB.addEventListener('click', ()=>go(-1));
+nextB.addEventListener('click', ()=>go(1));
+document.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight') go(1);
+  if(e.key==='ArrowLeft') go(-1);
+});
+</script>
+</body>
+</html>

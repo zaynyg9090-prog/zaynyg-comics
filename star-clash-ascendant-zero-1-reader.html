@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STAR CLASH: ASCENDANT ZERO #1 — The Invitation — Zaynyg World Comics Reader</title>
+<meta name="description" content="STAR CLASH: ASCENDANT ZERO #1 'The Invitation' — four Ascendants walk into the Maw Engine's tournament. Paid issue. Original anime comics.">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#050508">
+<style>
+/* STAR CLASH reader — starlight/circuit house style. PAID issue: content stays behind the paywall gate. */
+#pay-gate{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at center,#06121f 0%,#050508 75%);padding:24px}
+.gate-card{max-width:540px;text-align:center;background:#14141f;border:2px solid #00e5ff;border-radius:18px;
+  padding:44px 36px;box-shadow:0 0 60px rgba(0,229,255,.22)}
+.gate-card h1{font-size:2.4rem;margin:.2em 0 .4em}
+.gate-card p{color:var(--muted);line-height:1.6;margin-bottom:14px}
+.price-tag{font-size:2.6rem;font-weight:800;color:#fff;margin:10px 0}
+.gate-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+.btn-cyan{background:#00e5ff;color:#06222a;font-weight:800;padding:14px 30px;border-radius:999px;border:0;cursor:pointer;font-size:1rem}
+.btn-cyan:hover{transform:translateY(-2px)}
+.modal{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.7);align-items:center;justify-content:center;padding:24px}
+.modal.open{display:flex}
+.modal-box{background:#14141f;border:1px solid #00e5ff;border-radius:16px;padding:34px;max-width:440px;text-align:center}
+.modal-box p{color:var(--muted);line-height:1.6}
+.page-head{padding:22px 24px 6px;border-bottom:1px solid #26263a}
+.page-head h2{font-size:1.9rem;margin:0}
+.page-head .n{color:var(--muted);font-weight:700;font-size:.85rem;letter-spacing:.08em}
+.dialog{padding:10px 24px}
+.dialog .who{display:inline-block;font-weight:800;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 12px;border-radius:999px;margin-bottom:6px}
+.dialog .who.sol{background:#3a2c07;color:#ffd94d}
+.dialog .who.kana{background:#0f3a22;color:#7dff8a}
+.dialog .who.toru{background:#3d1f04;color:#ffab6e}
+.dialog .who.nyx{background:#1c1c2e;color:#b9a8ff}
+.dialog .who.sev{background:#2a2a44;color:#e8e2d6}
+.dialog .who.her{background:#3d0a16;color:#ff8fa3;letter-spacing:.14em}
+.dialog .who.eph{background:#122a3d;color:#7dc4ff}
+.dialog .who.ana{background:#2e1c2e;color:#f0a6ff}
+.dialog p{margin:0 0 14px;font-size:1.08rem;line-height:1.6;color:#f0ecff}
+.dialog p.cap{font-style:italic;color:#b9b0d8;border-left:3px solid #00e5ff;padding-left:14px}
+.dialog p.sfx{font-family:'Bangers','Arial Black',sans-serif;font-size:2.2rem;letter-spacing:.08em;color:#00e5ff;
+  text-shadow:0 0 18px rgba(0,229,255,.4);text-align:center;margin:18px 0}
+</style>
+</head>
+<body>
+
+<div id="pay-gate">
+  <div class="gate-card">
+    <div class="price-tag">🔒 $1.99</div>
+    <h1 class="display">PAID ISSUE</h1>
+    <p><strong style="color:#fff">STAR CLASH: ASCENDANT ZERO #1 — "The Invitation"</strong> is a paid issue — the complete story, with 8 painted panels.</p>
+    <p><strong style="color:#2dd4bf">PAID — one-tap pay link coming.</strong> Checkout opens at launch; the pay-link workstream wires the real link.</p>
+    <div class="gate-btns">
+      <button class="btn-cyan" id="paybtn">Pay $1.99 — coming soon</button>
+      <a class="btn btn-ghost" href="store.html">Back to Store</a>
+    </div>
+    <p style="margin-top:18px"><a href="reader.html" style="color:var(--gold);font-weight:700">Read STAR CLASH #0 free instead →</a></p>
+  </div>
+</div>
+
+<div class="modal" id="modal"><div class="modal-box">
+  <h3 class="display">PAID — one-tap pay link coming</h3>
+  <p id="modal-text">"STAR CLASH: ASCENDANT ZERO #1 — The Invitation" ($1.99) — checkout opens at launch. This issue isn't on sale yet. Thanks for being early. ⚡</p>
+  <button class="btn btn-gold" id="modal-close">Got it</button>
+</div></div>
+
+<div class="reader-shell" id="reader-shell" style="display:none">
+  <div class="reader-top">
+    <a href="store.html">← Store</a>
+    <span style="color:var(--muted);font-weight:700">STAR CLASH — Ascendant Zero #1 "The Invitation" <span style="color:#00e5ff">· PAID</span></span>
+  </div>
+  <div class="progress"><i id="bar"></i></div>
+  <div id="stage"></div>
+  <div class="reader-nav">
+    <button class="btn btn-ghost" id="prev">← Back</button>
+    <span class="count" id="count"></span>
+    <button class="btn btn-gold" id="next">Next →</button>
+  </div>
+</div>
+
+<script src="payments/pay-config.js"></script>
+<script>
+/* STAR CLASH: ASCENDANT ZERO #1 "The Invitation" — PAID issue ($1.99).
+   Full story beats staged in PAGES below (abridged from the 22-page script at
+   ~/workspace/anime-expansion-2026-09-30/WAVE_3_ISSUE_SCRIPT.md). The paywall gate stays up
+   until the pay-link workstream wires the real one-tap checkout. */
+const modal = document.getElementById('modal');
+(function(){
+  var issue = (window.ZW_PAY && window.ZW_PAY.getIssue('star-clash-az-1')) || null;
+  if(issue && window.ZW_PAY.isLive(issue)){
+    var btn = document.getElementById('paybtn');
+    btn.textContent = 'Pay $1.99 — Buy now';
+    btn.addEventListener('click', function(){ window.location.href = issue.payLink; });
+  } else {
+    document.getElementById('paybtn').addEventListener('click', ()=>modal.classList.add('open'));
+  }
+})();
+document.getElementById('modal-close').addEventListener('click', ()=>modal.classList.remove('open'));
+modal.addEventListener('click', e=>{ if(e.target===modal) modal.classList.remove('open'); });
+
+const PAGES = [
+  { title:"THE INVITATION", img:"assets/panels/scaz1-panel-1.webp", blocks:[
+    {w:"", t:"Four planets, four skies, one moment. Four containers bear the same mark: the Crimson Circuit's sigil — a jaw, closing. And the same five words, etched in light: THE CIRCUIT INVITES YOU.", cap:true},
+    {w:"", t:"The Crimson Circuit does not send invitations. It sends ultimatums, harvest orders, and — once — a funeral wreath made of a sun.", cap:true},
+    {w:"sol", who:"SOL", t:"...It's a tournament bracket."},
+    {w:"sol", who:"SOL", t:"It's inside the Maw Engine. They want us to fight inside the thing that eats us."}
+  ]},
+  { title:"FOUR WORLDS", img:"assets/panels/scaz1-panel-2.webp", blocks:[
+    {w:"kana", who:"KANA", t:"\"The Circuit will cease.\" That's the prize. They stop. Forever. That's — that's the whole war, over, in one bracket."},
+    {w:"toru", who:"TORU", t:"Kana. The Circuit has never once told the truth about a prize."},
+    {w:"toru", who:"TORU", t:"A tournament inside the Engine. Every bout feeds it aura. We wouldn't be fighting for the prize. We'd be fueling the machine with the fighting."},
+    {w:"nyx", who:"NYX", t:"Then we don't give it a fight worth eating."}
+  ]},
+  { title:"THE MUSTER", img:"assets/panels/scaz1-panel-3.webp", blocks:[
+    {w:"ana", who:"ANAPHORA", t:"— and so we answer the jaw that invites, we four, we few, we burning lights —"},
+    {w:"eph", who:"EPHEMERIS", t:"It's not on any schedule I can find. The stars didn't publish this. That's... concerning. That's very concerning."},
+    {w:"sol", who:"SOL", t:"The Circuit wants our best fighters inside their engine. The prize is a fairy tale. The venue is a stomach. Discuss."}
+  ]},
+  { title:"SEVENFOLD VOLUNTEERS", img:"assets/panels/scaz1-panel-4.webp", blocks:[
+    {w:"sev", who:"SEVENFOLD", t:"Well. That's settled, then. I'll go first."},
+    {w:"sev", who:"SEVENFOLD", t:"I've got lives to spare, Sol. That's the whole point of me. You four are the best we've got — you shouldn't walk into a stomach first. I should. I've died six times already. I'm very good at it. It's practically my hobby."},
+    {w:"kana", who:"KANA", t:"That's... that's not a plan, Sevenfold. That's a sacrifice with extra steps."},
+    {w:"sev", who:"SEVENFOLD", t:"All my plans are sacrifices with extra steps, Kana. I'm a diary with a body count. It's fine. I've made my peace. I make it six times a day."}
+  ]},
+  { title:"THE PLAN", img:"assets/panels/scaz1-panel-5.webp", blocks:[
+    {w:"sol", who:"SOL", t:"No. Not alone. If we go, we go together. The Circuit invited the Ascendants — plural. So the Ascendants answer — plural."},
+    {w:"toru", who:"TORU", t:"Together. And we don't fight their bracket. We fight the venue. The Engine's the enemy, not the other champions."}
+  ]},
+  { title:"THE EXAM", img:"assets/panels/scaz1-panel-6.webp", blocks:[
+    {w:"", t:"The bout. The Circuit champion comes at Sevenfold like a closing jaw — and Sevenfold lets the first killing blow land, studying it on the way down.", cap:true},
+    {w:"sev", who:"SEVENFOLD", t:"(dying, cheerful) Oh, interesting. Note that, me."},
+    {w:"sev", who:"SEVENFOLD", t:"(life four, mid-fight) Between heartbeats! Did everyone get that? Between!"},
+    {w:"sol", who:"SOL", t:"He's not fighting the champion. He's fighting the venue. Every death is a probe."}
+  ]},
+  { title:"THE AUDITOR", img:"assets/panels/scaz1-panel-7.webp", blocks:[
+    {w:"sev", who:"SEVENFOLD", t:"Okay! Okay, class dismissed! I've got it! I've got the whole curriculum!"},
+    {w:"her", who:"CIRCUIT HERALD", t:"THE COMBATANT HAS EXCEEDED PERMITTED DEATHS. RECALIBRATING —"},
+    {w:"sev", who:"SEVENFOLD", t:"Oh, I'm not the combatant anymore. I'm the auditor. Big difference. Auditors don't die. They just... file."},
+    {w:"eph", who:"EPHEMERIS", t:"He's publishing! The stars wouldn't publish this event, so he's publishing it himself! Oh, that's — that's actually brilliant."}
+  ]},
+  { title:"THE FOUR STEP IN", img:"assets/panels/scaz1-panel-8.webp", blocks:[
+    {w:"her", who:"CIRCUIT HERALD", t:"NEXT BOUTS: THE NOON. THE SPARK. THE SLOW BURN. THE QUIET ONE."},
+    {w:"sol", who:"SOL", t:"Together. Remember — not the champions. The venue."},
+    {w:"", t:"The four take their positions. The arena breathes. The Engine beats. Thousands of Circuit machines lean forward as one.", cap:true},
+    {w:"", t:"TO BE CONTINUED — ASCENDANT ZERO #2: \"BRACKETS\"", cap:true}
+  ]}
+];
+
+let i = 0;
+const stage = document.getElementById('stage');
+const bar = document.getElementById('bar');
+const count = document.getElementById('count');
+const prevB = document.getElementById('prev');
+const nextB = document.getElementById('next');
+
+function blockHTML(b){
+  if(b.sfx) return `<div class="dialog"><p class="sfx">${b.t}</p></div>`;
+  const capCls = b.cap ? ' cap' : '';
+  const who = b.who ? `<span class="who ${b.w}">${b.who}</span>` : '';
+  return `<div class="dialog">${who}<p class="${capCls.trim()}">${b.who?'"'+b.t+'"':b.t}</p></div>`;
+}
+function render(){
+  const p = PAGES[i];
+  if(i < PAGES.length){
+    stage.innerHTML = `
+      <div class="panel-card" id="panelcard" title="Tap to continue">
+        ${p.img?`<img src="${p.img}" alt="${p.title} — panel art">`:''}
+        <div class="page-head"><div class="n">Beat ${i+1} of ${PAGES.length}</div><h2 class="display">${p.title}</h2></div>
+        ${p.blocks.map(blockHTML).join('')}
+      </div>`;
+    document.getElementById('panelcard').addEventListener('click', ()=>go(1));
+    count.textContent = (i+1)+' / '+PAGES.length;
+    bar.style.width = ((i+1)/PAGES.length*100)+'%';
+    prevB.style.visibility = i===0 ? 'hidden' : 'visible';
+    nextB.textContent = i===PAGES.length-1 ? 'Finish →' : 'Next →';
+  } else {
+    bar.style.width = '100%';
+    count.textContent = 'Done';
+    stage.innerHTML = `
+      <div class="panel-card"><div class="end-card">
+        <h2 class="display">TO BE CONTINUED…</h2>
+        <p>You've reached the end of the staged beats for <b>STAR CLASH: ASCENDANT ZERO #1 — "The Invitation"</b>.<br>
+        The complete issue is yours — thank you for backing the universe.</p>
+        <a class="btn btn-gold" href="store.html">← Back to the Store</a>
+      </div></div>`;
+    prevB.style.visibility = 'visible';
+    nextB.style.visibility = 'hidden';
+  }
+}
+function go(d){
+  const n = i + d;
+  if(n < 0 || n > PAGES.length) return;
+  i = n; nextB.style.visibility = 'visible'; render();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+prevB.addEventListener('click', ()=>go(-1));
+nextB.addEventListener('click', ()=>go(1));
+document.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight') go(1);
+  if(e.key==='ArrowLeft') go(-1);
+});
+</script>
+</body>
+</html>

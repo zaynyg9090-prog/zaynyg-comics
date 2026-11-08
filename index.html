@@ -8,9 +8,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="favicon.ico">
 <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
-<meta name="theme-color" content="#0b0b12">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#050508">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -20,6 +18,7 @@
   <div class="nav-links">
     <a href="index.html" class="active">Home</a>
     <a href="library.html">Library</a>
+    <a href="faith.html">✝️ Faith</a>
     <a href="reader.html">Read Free</a>
     <a href="store.html">Store</a>
     <a href="https://zaynyg-world-dynasty.pages.dev">Blog</a>
@@ -27,7 +26,7 @@
 </div></nav>
 
 <header class="hero">
-  <div class="hero-bg"></div><div class="hero-shade"></div>
+  <img class="hero-burst" src="assets/sticker2693811848392836206_2_rbzu.png" alt="Zaynyg World burst — Earth globes bursting from a comic starburst"><div class="hero-shade"></div>
   <div class="wrap hero-content">
     <span class="kicker">100% Original Universes</span>
     <h1>YOUR NEW<br><span class="gold">COMIC OBSESSION</span><br>STARTS HERE.</h1>
@@ -42,6 +41,14 @@
 <section class="section"><div class="wrap">
   <div class="section-head"><h2>🔥 Featured Series</h2><a href="library.html">View all →</a></div>
   <div class="shelf" id="featured-shelf"></div>
+</div></section>
+
+<section class="section band"><div class="wrap">
+  <div class="section-head"><h2>✝️ New: Faith Comics</h2><a href="faith.html">Enter →</a></div>
+  <p style="color:var(--muted);max-width:640px">Bible heroes. Jesus adventures. Love and heaven — in full comic color. Five Jesus Adventures ready to read free right now, with the Bible Heroes series on the way.</p>
+  <div class="btn-row" style="margin-top:1rem">
+    <a class="btn btn-gold" href="faith.html">✝️ Explore Faith Comics</a>
+  </div>
 </div></section>
 
 <section class="section band"><div class="wrap">
@@ -60,20 +67,24 @@
 </div></section>
 
 
-<div class="cross-promo" style="text-align:center;padding:1.2rem;color:#9d8cff;font-size:.9rem;border-top:1px solid #26263a;">
-  Love the comics? Wear the universe — <strong style="color:#ff4d6d;">34 Zaynyg World clothing lines dropping soon</strong> &middot;
-  <a href="https://zsbzba-dy.myshopify.com" style="color:#2dd4bf;">Shop</a>
+<div class="cross-promo" style="text-align:center;padding:1.2rem;color:#9aa0b0;font-size:.9rem;border-top:1px solid #26263a;">
+  Love the comics? Wear the universe — <strong style="color:#ffd23f;">34 Zaynyg World clothing lines dropping soon</strong> &middot;
+  <a href="https://zsbzba-dy.myshopify.com" style="color:#ffd23f;">Shop</a>
 </div>
 
 <footer><div class="wrap">
-  <div><strong>⚡ ZAYNYG WORLD COMICS</strong><br>Original comics &amp; superheroes by Zaynyg World.<br>More drops on the way.</div>
+  <div><strong>⚡ ZAYNYG WORLD COMICS</strong><br>Original comics &amp; superheroes by Zaynyg World.<br>More drops on the way.<br>📍 Zaynyg World · 1655 Lime St, Fernandina Beach, FL 32034</div>
   <div>All characters and stories are original works.<br>© 2026 Zaynyg World. All rights reserved.</div>
-  <div><strong>🛍️ OUR STORES</strong><br>
-  <a href="https://zsbzba-dy.myshopify.com" style="color:#2dd4bf;">Toy Store</a> &middot;
-  <a href="https://app.amazecommerce.com/shop/zaynygworld" style="color:#2dd4bf;">Amaze Shop</a> &middot;
-  <a href="https://zaynyg8.gumroad.com/" style="color:#2dd4bf;">Ebooks</a><br>
-  Merch &mdash; <em>dropping soon</em> &middot;
-  <a href="https://zaynyg-world-dynasty.pages.dev" style="color:#2dd4bf;">Zaynyg World Dynasty</a></div>
+  <div><strong>🌐 OUR FAMILY OF SITES</strong><br>
+  <a href="https://zsbzba-dy.myshopify.com" style="color:#ffd23f;">Toy Store</a> &middot;
+  <a href="https://zsbzba-dy.myshopify.com" style="color:#ffd23f;">Ebooks</a> &middot;
+  <a href="https://app.amazecommerce.com/shop/zaynygworld" style="color:#ffd23f;">Amaze Shop</a> &middot;
+  <a href="https://zsbzba-dy.myshopify.com" style="color:#ffd23f;">Merch</a><br>
+  <a href="https://zaynyg-world-dynasty.pages.dev" style="color:#ffd23f;">Dynasty Blog</a> &middot;
+  <a href="https://zaynyg-comics.pages.dev" style="color:#ffd23f;">Comics App</a><br>
+  Own Store — ZAYNYG WORLD DYNASTY (coming soon; link activates when it deploys) &middot;
+  Dee Dee's Sister Site (coming soon; link activates when it deploys)
+  <!-- CROSS-LINKS (activate at deploy): <a href="PASTE-OWN-SITE-PAGES-URL-HERE">Own Store</a> · <a href="PASTE-SISTER-SITE-PAGES-URL-HERE">Dee Dee's Sister Site</a> --></div>
 </div></footer>
 
 <script src="data.js"></script>
@@ -81,7 +92,7 @@
 function card(s){
   return `<a class="card" href="library.html#${s.id}">
     ${s.badge?`<span class="badge ${s.status==='free'?'free':s.status==='soon'?'soon':''}">${s.badge}</span>`:''}
-    <img src="${s.cover}" alt="${s.title} cover art" loading="lazy">
+    <img src="${s.cover}" alt="${s.title} cover art" loading="lazy" onerror="this.onerror=null;this.src='assets/sticker2693811848392836206_2_rbzu.png'">
     <div class="card-body"><h3>${s.title}</h3><div class="card-meta">${s.genre} • ${s.audience}</div></div>
   </a>`;
 }
@@ -90,8 +101,8 @@ document.getElementById('featured-shelf').innerHTML =
 document.getElementById('store-tease').innerHTML =
   window.ZAYNYG_ISSUES.slice(0,4).map(i=>`
     <a class="card" href="store.html">
-      <img src="${i.cover}" alt="${i.series} ${i.issue}" loading="lazy">
-      <div class="card-body"><h3>${i.series}</h3><div class="card-meta">${i.issue} • ${i.price===0?'<b style="color:#2dd4bf">FREE</b>':'$'+i.price.toFixed(2)}</div></div>
+      <img src="${i.cover}" alt="${i.series} ${i.issue}" loading="lazy" onerror="this.onerror=null;this.src='assets/sticker2693811848392836206_2_rbzu.png'">
+      <div class="card-body"><h3>${i.series}</h3><div class="card-meta">${i.issue} • ${i.price===0?'<b style="color:#ffd23f">FREE</b>':'$'+i.price.toFixed(2)}</div></div>
     </a>`).join('');
 </script>
 </body>
