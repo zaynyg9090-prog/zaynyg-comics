@@ -1,0 +1,146 @@
+[
+ {
+  "handle": "daniel-and-the-lions-den",
+  "title": "Daniel and the Lion's Den",
+  "type": "Book - Kids & Family",
+  "price": 4.99,
+  "img": "assets/shop/daniel-and-the-lions-den.jpg",
+  "url": "https://zsbzba-dy.myshopify.com/products/daniel-and-the-lions-den"
+ },
+ {
+  "handle": "david-and-goliath",
+  "title": "David and Goliath",
+  "type": "Book - Kids & Family",
+  "price": 4.99,
+  "img": "assets/shop/david-and-goliath.jpg",
+  "url": "https://zsbzba-dy.myshopify.com/products/david-and-goliath"
+ },
+ {
+  "handle": "noahs-ark-a-zaynyg-world-bible-story-for-kids-ages-6-10",
+  "title": "Noah's Ark \u2014 A Zaynyg World Bible Story for Kids (Ages 6-10)",
+  "type": "Book - Kids & Family",
+  "price": 4.99,
+  "img": "assets/shop/noahs-ark-a-zaynyg-world-bible-story-for.jpg",
+  "url": "https://zsbzba-dy.myshopify.com/products/noahs-ark-a-zaynyg-world-bible-story-for-kids-ages-6-10"
+ },
+ {
+  "handle": "jonah-and-the-great-fish-a-zaynyg-world-bible-story-for-kids",
+  "title": "Jonah and the Great Fish \u2014 A Zaynyg World Bible Story for Kids",
+  "type": "Book - Kids & Family",
+  "price": 4.99,
+  "img": "assets/shop/jonah-and-the-great-fish-a-zaynyg-world-.jpg",
+  "url": "https://zsbzba-dy.myshopify.com/products/jonah-and-the-great-fish-a-zaynyg-world-bible-story-for-kids"
+ },
+ {
+  "handle": "jesus-goes-to-the-future",
+  "title": "Jesus Goes to the Future",
+  "type": "Book - Kids & Family",
+  "price": 4.99,
+  "img": "assets/shop/jesus-goes-to-the-future.jpg",
+  "url": "https://zsbzba-dy.myshopify.com/products/jesus-goes-to-the-future"
+ },
+ {
+  "handle": "sunday-school-pack-10-faith-books",
+  "title": "Sunday School Pack \u2014 10 Faith Books for Your Kids' Ministry",
+  "type": "Book - Kids & Family",
+  "price": 34.99,
+  "img": "assets/shop/sunday-school-pack-10-faith-books.jpg",
+  "url": "https://zsbzba-dy.myshopify.com/products/sunday-school-pack-10-faith-books"
+ },
+ {
+  "handle": "glitch-kids-1-the-toilet-portal",
+  "title": "Glitch Kids 1: The Toilet Portal",
+  "type": "Digital",
+  "price": 0.0,
+  "img": "assets/shop/glitch-kids-1-the-toilet-portal.jpg",
+  "url": "https://zsbzba-dy.myshopify.com/products/glitch-kids-1-the-toilet-portal"
+ },
+ {
+  "handle": "glitch-kids-the-complete-glitch-out-collection-books-1-3",
+  "title": "Glitch Kids: The Complete Glitch-Out Collection (Books 1-3)",
+  "type": "Digital",
+  "price": 12.99,
+  "img": "assets/shop/glitch-kids-the-complete-glitch-out-coll.jpg",
+  "url": "https://zsbzba-dy.myshopify.com/products/glitch-kids-the-complete-glitch-out-collection-books-1-3"
+ },
+ {
+  "handle": "glitch-kids-full-series-read-along-audio-books-1-3",
+  "title": "Glitch Kids: Full Series Read-Along Audio (Books 1-3)",
+  "type": "Digital",
+  "price": 6.99,
+  "img": "assets/shop/glitch-kids-full-series-read-along-audio.jpg",
+  "url": "https://zsbzba-dy.myshopify.com/products/glitch-kids-full-series-read-along-audio-books-1-3"
+ },
+ {
+  "handle": "north-park-1-the-great-snow-day-heist",
+  "title": "North Park 1: The Great Snow Day Heist",
+  "type": "Digital",
+  "price": 0.0,
+  "img": "assets/shop/north-park-1-the-great-snow-day-heist.jpg",
+  "url": "https://zsbzba-dy.myshopify.com/products/north-park-1-the-great-snow-day-heist"
+ },
+ {
+  "handle": "emberfall-1-spark-of-the-comet-wolf",
+  "title": "Emberfall 1: Spark of the Comet Wolf",
+  "type": "Digital",
+  "price": 0.0,
+  "img": "assets/shop/emberfall-1-spark-of-the-comet-wolf.jpg",
+  "url": "https://zsbzba-dy.myshopify.com/products/emberfall-1-spark-of-the-comet-wolf"
+ },
+ {
+  "handle": "dragon-babysitters-club",
+  "title": "Dragon Babysitters Club",
+  "type": "Book - Kids & Family",
+  "price": 4.99,
+  "img": "assets/shop/dragon-babysitters-club.jpg",
+  "url": "https://zsbzba-dy.myshopify.com/products/dragon-babysitters-club"
+ },
+ {
+  "handle": "glitch-kids-glitch-mode-tee",
+  "title": "Glitch Kids Glitch Mode Tee",
+  "type": "",
+  "price": 27.99,
+  "img": "assets/shop/glitch-kids-glitch-mode-tee.jpg",
+  "url": "https://zsbzba-dy.myshopify.com/products/glitch-kids-glitch-mode-tee"
+ },
+ {
+  "handle": "glitch-kids-beanie",
+  "title": "Glitch Kids Beanie",
+  "type": "",
+  "price": 27.99,
+  "img": "assets/shop/glitch-kids-beanie.jpg",
+  "url": "https://zsbzba-dy.myshopify.com/products/glitch-kids-beanie"
+ },
+ {
+  "handle": "zaynyg-world-logo-tee",
+  "title": "Zaynyg World Logo Tee",
+  "type": "",
+  "price": 24.99,
+  "img": "assets/shop/zaynyg-world-logo-tee.jpg",
+  "url": "https://zsbzba-dy.myshopify.com/products/zaynyg-world-logo-tee"
+ },
+ {
+  "handle": "kingdom-comics-bethlehem-star-kids-christmas-tee",
+  "title": "Kingdom Comics \"Bethlehem Star\" Kids Christmas Tee",
+  "type": "Kids T-Shirt",
+  "price": 24.99,
+  "img": "assets/shop/kingdom-comics-bethlehem-star-kids-chris.jpg",
+  "url": "https://zsbzba-dy.myshopify.com/products/kingdom-comics-bethlehem-star-kids-christmas-tee"
+ },
+ {
+  "handle": "emberfall-wolf-tee",
+  "title": "Emberfall Wolf Tee",
+  "type": "",
+  "price": 27.99,
+  "img": "assets/shop/emberfall-wolf-tee.jpg",
+  "url": "https://zsbzba-dy.myshopify.com/products/emberfall-wolf-tee"
+ },
+ {
+  "handle": "spooky-star-squad-tee",
+  "title": "Spooky Star Squad Tee",
+  "type": "",
+  "price": 27.99,
+  "img": "assets/shop/spooky-star-squad-tee.jpg",
+  "url": "https://zsbzba-dy.myshopify.com/products/spooky-star-squad-tee"
+ }
+]

@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script src="zw-gate.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>NUCLEAR MONSTER COLLEGE FOOTBALL: Apocalypse</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; background: #0a0f0a; height: 100%; overflow: hidden; }
+  body { font-family: Arial, Helvetica, sans-serif; color: #fff; display: flex; justify-content: center; }
+  #wrap { position: relative; width: 100%; max-width: 480px; height: 100%; max-height: 900px; }
+  canvas { display: block; width: 100%; height: 100%; background: #14532a; touch-action: none; }
+  #hud {
+    position: absolute; top: 0; left: 0; right: 0; padding: 8px 10px;
+    background: rgba(0,0,0,0.55); font-weight: bold; font-size: 14px;
+    display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; z-index: 5;
+  }
+  #hud .stat span { color: #ffd23f; }
+  #meterWrap { flex: 1 1 120px; height: 14px; background: #222; border: 2px solid #fff; border-radius: 8px; overflow: hidden; }
+  #meterFill { height: 100%; width: 0%; background: linear-gradient(90deg, #39ff6a, #c6ff00); transition: width 0.15s; }
+  #muteBtn {
+    background: #111; color: #fff; border: 2px solid #fff; border-radius: 8px;
+    font-weight: bold; font-size: 12px; padding: 4px 8px; cursor: pointer;
+  }
+  #beastBtn {
+    position: absolute; right: 14px; bottom: 22px; z-index: 6;
+    width: 118px; height: 118px; border-radius: 50%;
+    background: #39ff6a; color: #04220a; border: 4px solid #fff;
+    font-size: 17px; font-weight: 900; line-height: 1.15; cursor: pointer;
+    box-shadow: 0 0 18px rgba(57,255,106,0.7); touch-action: manipulation;
+  }
+  #beastBtn:disabled { background: #555; color: #ccc; box-shadow: none; opacity: 0.65; }
+  #beastBtn.beast-on { background: #c6ff00; animation: pulse 0.5s infinite alternate; }
+  #attackBtn {
+    position: absolute; left: 14px; bottom: 22px; z-index: 6;
+    width: 112px; height: 112px; border-radius: 50%;
+    background: #c8102e; color: #fff; border: 4px solid #fff;
+    font-size: 17px; font-weight: 900; line-height: 1.15; cursor: pointer;
+    box-shadow: 0 0 18px rgba(200,16,46,0.7); touch-action: manipulation;
+  }
+  #attackBtn:disabled { opacity: 0.4; }
+  #weaponBtn {
+    position: absolute; left: 14px; bottom: 148px; z-index: 6;
+    width: 112px; height: 56px; border-radius: 14px;
+    background: #7a2ea0; color: #fff; border: 3px solid #fff;
+    font-size: 13px; font-weight: 900; line-height: 1.2; cursor: pointer; display: none;
+  }
+  #weaponBtn:disabled { opacity: 0.4; }
+  #driveBtn {
+    position: absolute; right: 14px; bottom: 148px; z-index: 6;
+    width: 112px; height: 56px; border-radius: 14px;
+    background: #00b3c8; color: #fff; border: 3px solid #fff;
+    font-size: 14px; font-weight: 900; line-height: 1.2; cursor: pointer; display: none;
+  }
+  #driveBtn:disabled { opacity: 0.4; }
+  #monSelect { width: 100%; max-width: 370px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 10px 0 4px; }
+  .mon-btn { background: #111; color: #fff; border: 2px solid #fff; border-radius: 10px; font-size: 12px; font-weight: 900; padding: 8px 10px; cursor: pointer; }
+  .mon-btn.sel { background: #ff7a00; }
+  .mon-btn:disabled { opacity: 0.45; cursor: default; }
+  #monTrait { font-size: 14px; color: #ffd23f; font-weight: bold; min-height: 20px; }
+  @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.08); } }
+  .screen {
+    position: absolute; inset: 0; z-index: 10; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+    background: rgba(0,0,0,0.78); padding: 24px;
+    justify-content: flex-start; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; touch-action: pan-y;
+  }
+  /* center when it fits, scroll from the top when it doesn't (was clipping title + start button on short screens) */
+  .screen > :first-child { margin-top: auto !important; }
+  .screen > :last-child { margin-bottom: auto !important; }
+  .screen.hidden { display: none; }
+  .screen h1 { font-size: 32px; margin: 0 0 6px; color: #ffd23f; letter-spacing: 1px; }
+  .screen h2 { font-size: 26px; margin: 0 0 10px; color: #ff5340; }
+  .screen .sub { font-size: 18px; color: #7ec8ff; margin: 0 0 14px; font-weight: bold; }
+  .screen p { font-size: 16px; line-height: 1.5; max-width: 340px; margin: 6px 0; }
+  .screen .quote { font-style: italic; color: #ffd23f; }
+  .big-btn {
+    margin-top: 18px; background: #ff7a00; color: #fff; border: 3px solid #fff;
+    border-radius: 14px; font-size: 22px; font-weight: 900; padding: 14px 30px; cursor: pointer;
+  }
+  .score-line { font-size: 19px; font-weight: bold; }
+  .score-line span { color: #ffd23f; }
+  #banner {
+    position: absolute; left: 0; right: 0; top: 38%; text-align: center; z-index: 7;
+    font-size: 40px; font-weight: 900; color: #ffd23f; text-shadow: 3px 3px 0 #000;
+    display: none; pointer-events: none;
+  }
+  .shop-btn {
+    margin-top: 12px; background: #1e6fb8; color: #fff; border: 3px solid #fff;
+    border-radius: 14px; font-size: 18px; font-weight: 900; padding: 10px 24px; cursor: pointer;
+  }
+  #shopScreen { justify-content: flex-start; overflow-y: auto; padding-top: 16px; }
+  #shopScreen h1 { font-size: 28px; }
+  #shopScreen .billing-note {
+    font-size: 14px; line-height: 1.45; color: #ffd23f; max-width: 340px; margin: 4px 0 12px;
+  }
+  #packList { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 10px; }
+  .pack {
+    background: rgba(255,255,255,0.08); border: 2px solid #fff; border-radius: 12px;
+    padding: 10px 12px; text-align: left;
+  }
+  .pack h3 { margin: 0 0 4px; font-size: 17px; color: #7ec8ff; }
+  .pack p { margin: 0 0 8px; font-size: 14px; line-height: 1.4; max-width: none; }
+  .pack .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .pack .price { font-size: 18px; font-weight: 900; color: #ffd23f; white-space: nowrap; }
+  .unlock-btn {
+    background: #333; color: #fff; border: 2px solid #ffd23f; border-radius: 10px;
+    font-size: 12px; font-weight: 900; padding: 8px 10px; cursor: pointer; text-align: center;
+  }
+  #shopNotice { min-height: 20px; font-size: 14px; color: #39ff6a; font-weight: bold; margin: 10px 0 4px; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="game" width="420" height="700"></canvas>
+
+  <div id="hud">
+    <div class="stat">WAVE <span id="hudWave">1</span></div>
+    <div class="stat">TIME <span id="hudTime">0:00</span></div>
+    <div class="stat">SCORE <span id="hudScore">0</span></div>
+    <div class="stat">KO <span id="hudKO">0</span></div>
+    <div class="stat">LIVES <span id="hudLives"></span></div>
+    <div class="stat">VEHICLE <span id="hudVehicle">-</span></div>
+    <div id="meterWrap"><div id="meterFill"></div></div>
+    <button id="muteBtn" type="button">SOUND: ON</button>
+  </div>
+
+  <div id="banner">WAVE 1!</div>
+
+  <button id="attackBtn" type="button">ATTACK</button>
+  <button id="beastBtn" type="button" disabled>BEAST<br>MODE</button>
+  <button id="weaponBtn" type="button" disabled>WEAPON</button>
+  <button id="driveBtn" type="button">ENTER</button>
+
+  <div id="startScreen" class="screen">
+    <h1>NUCLEAR MONSTER<br>COLLEGE FOOTBALL</h1>
+    <div class="sub">APOCALYPSE — THE OPEN LOT (v3)</div>
+    <p>A Borderline Beasts game</p>
+    <p>Raiders pour in from every side of the open lot. Hold the line on foot — or hop in a car or the neon bus and run them down, GTA-style!</p>
+    <p class="quote">Commissioner Jose says: "HOLD THE LINE!"</p>
+    <div id="monSelect"></div>
+    <div id="monTrait"></div>
+    <p>Best score: <span id="startBest">0</span> &nbsp;|&nbsp; Waves cleared: <span id="startWaves">0</span></p>
+    <button id="startBtn" class="big-btn" type="button">SURVIVE!</button>
+    <button id="shopBtnStart" class="shop-btn" type="button">UPGRADES</button>
+  </div>
+
+  <div id="overScreen" class="screen hidden">
+    <h2>OVERRUN!</h2>
+    <p class="score-line">Score: <span id="finalScore">0</span></p>
+    <p class="score-line">Waves cleared: <span id="finalWaves">0</span></p>
+    <p class="score-line">Time survived: <span id="finalTime">0:00</span></p>
+    <p class="score-line">Knockouts: <span id="finalKO">0</span></p>
+    <p class="score-line">Best: <span id="finalBest">0</span></p>
+    <button id="againBtn" class="big-btn" type="button">SURVIVE AGAIN</button>
+    <button id="shopBtnOver" class="shop-btn" type="button">UPGRADES</button>
+  </div>
+
+  <div id="shopScreen" class="screen hidden">
+    <h1>UPGRADES</h1>
+    <p class="billing-note">Upgrades unlock when the game launches on Google Play. This version takes no payment, collects no payment info, and simulates no purchase.</p>
+    <div id="packList"></div>
+    <div id="shopNotice"></div>
+    <button id="shopBackBtn" class="shop-btn" type="button">BACK TO GAME</button>
+  </div>
+</div>
+<script>
+(function () {
+  'use strict';
+  var canvas = document.getElementById('game');
+  var ctx = canvas.getContext('2d');
+  var W = 420, H = 700, ARENA = 16; // fenced arena inset
+
+  // ---------- Sound (WebAudio bleeps made in code, no samples) ----------
+  var audioOn = true, audioCtx = null;
+  function beep(freq, dur) {
+    if (!audioOn) return;
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.type = 'square'; o.frequency.value = freq;
+      g.gain.setValueAtTime(0.06, audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(); o.stop(audioCtx.currentTime + dur);
+    } catch (e) { /* sound is optional */ }
+  }
+  document.getElementById('muteBtn').addEventListener('click', function () {
+    audioOn = !audioOn;
+    this.textContent = audioOn ? 'SOUND: ON' : 'SOUND: OFF';
+  });
+
+  // ---------- Roster (same 12 monsters + jersey numbers as Crash Course) ----------
+  var MONSTERS = [
+    { id: 'chomp', name: 'CHOMP DELGADO', num: '77', team: 'Swampjaw Maulers', jersey: '#1e6fb8', trim: '#ff7a00', skin: '#2e8b57', eye: '#ffd23f', traitDesc: 'Balanced — the original. No bonuses, no weaknesses.', unlock: 0, speed: 1.0, agility: 1.0, meterGain: 1.0, beastTime: 5 },
+    { id: 'talon', name: 'TALON OKAFOR', num: '7', team: 'Cloudbreak Kings', jersey: '#7b5cff', trim: '#c0c0c0', skin: '#8f7bd8', eye: '#a78bfa', traitDesc: 'Agile — smaller, quicker, dodges like wind.', unlock: 2, speed: 1.15, agility: 1.25, meterGain: 1.0, beastTime: 5, small: true },
+    { id: 'coil', name: 'COIL TANAKA', num: '1', team: 'Nightcourt Serpents', jersey: '#111111', trim: '#22d3ee', skin: '#1a3a3a', eye: '#22d3ee', traitDesc: 'Tight turning — snaps to your finger instantly.', unlock: 4, speed: 1.0, agility: 1.6, meterGain: 1.0, beastTime: 5 },
+    { id: 'stinger', name: 'STINGER RUIZ', num: '13', team: 'Dustdevil Outlaws', jersey: '#d4a017', trim: '#111111', skin: '#3a2a12', eye: '#ffb300', traitDesc: 'Fastest feet on the field — pure speed.', unlock: 6, speed: 1.3, agility: 1.1, meterGain: 1.0, beastTime: 5 },
+    { id: 'tusk', name: 'TUSK VOLKOV', num: '99', team: 'Frostbite Sentinels', jersey: '#5a6b7a', trim: '#7fe3f0', skin: '#6b7f8f', eye: '#bfefff', traitDesc: 'Tough — armor absorbs one hit, refreshed every wave cleared.', unlock: 8, speed: 0.9, agility: 0.9, meterGain: 1.0, beastTime: 5 },
+    { id: 'vex', name: 'BONECRUSHER VEX', num: '77', team: 'Redline Raiders (villain-play)', jersey: '#111111', trim: '#c8102e', skin: '#222222', eye: '#ff2222', traitDesc: 'Rage — Beast Mode burns longer (7 seconds).', unlock: 10, speed: 1.0, agility: 1.0, meterGain: 1.0, beastTime: 7 },
+    { id: 'prism', name: 'PRISM', num: '3', team: 'The Border Itself', jersey: '#2b2b2b', trim: '#ffffff', skin: '#4a4a6a', eye: 'spectrum', traitDesc: 'Spectrum — energy orbs fill the Beast Meter 30% faster.', unlock: 12, speed: 1.05, agility: 1.1, meterGain: 1.3, beastTime: 5 },
+    { id: 'snap', name: 'SNAP DELGADO', num: '1', team: 'Swampjaw Maulers', jersey: '#1e6fb8', trim: '#ff7a00', skin: '#3aa76d', eye: '#a3ff00', traitDesc: 'Tail-whip speed bursts — the fastest rusher in the league.', unlock: 14, speed: 1.25, agility: 1.15, meterGain: 1.0, beastTime: 5, small: true },
+    { id: 'tad', name: 'TAD POLETTI', num: '7', team: 'Swampjaw Maulers', jersey: '#1e6fb8', trim: '#ff7a00', skin: '#58c24a', eye: '#00e5ff', traitDesc: 'Sticky tongue, long-bomb QB — quick hops, snappy turns.', unlock: 16, speed: 1.05, agility: 1.3, meterGain: 1.0, beastTime: 5, small: true },
+    { id: 'havoc', name: 'HAVOC', num: '11', team: 'Swampjaw Maulers', jersey: '#1e6fb8', trim: '#ff7a00', skin: '#7a9cc0', eye: '#ff7a00', traitDesc: 'Short flight, dive-from-the-sky catches — high and fast.', unlock: 18, speed: 1.15, agility: 1.2, meterGain: 1.0, beastTime: 5 },
+    { id: 'marv', name: 'MUDSLIDE MARV', num: '77', team: 'Swampjaw Maulers', jersey: '#1e6fb8', trim: '#ff7a00', skin: '#8a7a5c', eye: '#ff2fd6', traitDesc: 'Living wrecking ball — armor absorbs one hit, refreshed every wave cleared.', unlock: 20, speed: 0.95, agility: 0.95, meterGain: 1.0, beastTime: 5 },
+    { id: 'gumbo', name: 'GUMBO JACK', num: '23', team: 'Swampjaw Maulers', jersey: '#1e6fb8', trim: '#ff7a00', skin: '#5a5a5a', eye: '#39ff6a', traitDesc: 'Nuclear-charged leg — the Beast Meter fills faster for the big kick.', unlock: 22, speed: 1.0, agility: 1.05, meterGain: 1.25, beastTime: 5 }
+  ];
+  var careerWaves = 0, best = 0;
+  try { careerWaves = parseInt(localStorage.getItem('bb-survival-waves') || '0', 10) || 0; } catch (e) { careerWaves = 0; }
+  try { best = parseInt(localStorage.getItem('bb-survival-high') || '0', 10) || 0; } catch (e) { best = 0; }
+  var selectedMonster = 'chomp';
+  try { selectedMonster = localStorage.getItem('bb-survival-monster') || 'chomp'; } catch (e) { selectedMonster = 'chomp'; }
+  function monsterById(id) {
+    for (var i = 0; i < MONSTERS.length; i++) if (MONSTERS[i].id === id) return MONSTERS[i];
+    return MONSTERS[0];
+  }
+  if (careerWaves < monsterById(selectedMonster).unlock) selectedMonster = 'chomp';
+  function selectedMon() { return monsterById(selectedMonster); }
+
+  // ---------- State ----------
+  var state = 'start'; // start | play | over
+  var player, raiders, orbs, pickups, particles, vehicles, driving, vehicleInvuln, sparkTimer;
+  vehicles = []; driving = null; vehicleInvuln = 0; sparkTimer = 0; // v3: initialized before first draw/HUD so start screen never crashes
+  var wave, wavesCleared, score, kos, lives, meter, beastTime, invuln, armor;
+  var spawnQueue, spawnTimer, weaponTimer, timeAlive, lastTime;
+  // init before the first draw()/updateHUD() on the start screen (was crashing: orbs undefined)
+  raiders = []; orbs = []; pickups = []; particles = []; player = null;
+  wave = 1; wavesCleared = 0; score = 0; kos = 0; lives = 3; meter = 0; beastTime = 0; invuln = 0; armor = 0;
+  spawnQueue = 0; spawnTimer = 0; weaponTimer = 14; timeAlive = 0; lastTime = 0;
+  var keys = {}, joyX = 0, joyY = 0, joyActive = false;
+  var attackCooldown = 0, heldWeapon = null, bannerTimer = 0;
+  var decorations = [];
+  for (var d = 0; d < 26; d++) {
+    decorations.push({ x: 24 + Math.random() * (W - 48), y: 60 + Math.random() * (H - 100), r: 3 + Math.random() * 8, kind: Math.random() < 0.5 ? 'pad' : 'tuft' });
+  }
+
+  function showBanner(text) {
+    var b = document.getElementById('banner');
+    b.textContent = text; b.style.display = 'block'; bannerTimer = 1.6;
+  }
+  function fmtTime(s) {
+    var m = Math.floor(s / 60), sec = Math.floor(s % 60);
+    return m + ':' + (sec < 10 ? '0' + sec : sec);
+  }
+  function updateHUD() {
+    document.getElementById('hudWave').textContent = wave;
+    document.getElementById('hudTime').textContent = fmtTime(timeAlive);
+    document.getElementById('hudScore').textContent = score;
+    document.getElementById('hudKO').textContent = kos;
+    document.getElementById('hudLives').textContent = '';
+    for (var i = 0; i < lives; i++) document.getElementById('hudLives').textContent += '⛑';
+    document.getElementById('meterFill').style.width = Math.min(100, meter) + '%';
+    var bb = document.getElementById('beastBtn');
+    bb.disabled = !(meter >= 100 && state === 'play');
+    bb.className = beastTime > 0 ? 'beast-on' : '';
+    var wb = document.getElementById('weaponBtn');
+    wb.style.display = heldWeapon ? 'block' : 'none';
+    wb.disabled = !heldWeapon;
+    wb.textContent = heldWeapon ? heldWeapon.label : 'WEAPON';
+    var db = document.getElementById('driveBtn');
+    var nearVeh = null;
+    if (state === 'play' && !driving) {
+      for (var vi = 0; vi < vehicles.length; vi++) {
+        var vv = vehicles[vi];
+        var vdx = vv.x - player.x, vdy = vv.y - player.y;
+        if (!vv.broken && Math.sqrt(vdx * vdx + vdy * vdy) < 62) { nearVeh = vv; break; }
+      }
+    }
+    db.style.display = (driving || nearVeh) ? 'block' : 'none';
+    db.textContent = driving ? 'EXIT' : 'ENTER';
+    document.getElementById('hudVehicle').textContent = driving ? (driving.label + ' ' + driving.hp + '/' + driving.maxHp) : '-';
+  }
+
+  function reset() {
+    var mon = selectedMon();
+    // v3 art pass: BIGGER, STRONGER monsters (broad shoulders in drawMonster)
+    player = { x: W / 2, y: H / 2, r: mon.small ? 19 : 24, vx: 0, vy: 0, face: 0 };
+    driving = null; vehicleInvuln = 0; sparkTimer = 0;
+    // v3 open lot: futuristic cars + one neon bus, parked in the lot (GTA-style)
+    vehicles = [
+      { type: 'car', label: 'FUTURE CAR', x: 80, y: 150, w: 44, h: 26, color: '#00e5ff', neon: '#00e5ff', hp: 6, maxHp: 6, broken: false, angle: 0 },
+      { type: 'car', label: 'FUTURE CAR', x: 340, y: 240, w: 44, h: 26, color: '#ff2fd6', neon: '#ff2fd6', hp: 6, maxHp: 6, broken: false, angle: 0 },
+      { type: 'car', label: 'FUTURE CAR', x: 90, y: 560, w: 44, h: 26, color: '#ffb300', neon: '#ffb300', hp: 6, maxHp: 6, broken: false, angle: 0 },
+      { type: 'bus', label: 'NEON BUS', x: 300, y: 580, w: 72, h: 34, color: '#1e6fb8', neon: '#39ff6a', hp: 10, maxHp: 10, broken: false, angle: 0 }
+    ];
+    raiders = []; orbs = []; pickups = []; particles = [];
+    wave = 1; wavesCleared = 0; score = 0; kos = 0; lives = 3;
+    meter = 0; beastTime = 0; invuln = 0; armor = (mon.id === 'tusk' || mon.id === 'marv') ? 1 : 0;
+    heldWeapon = null; attackCooldown = 0; timeAlive = 0; weaponTimer = 14;
+    startWave(1);
+  }
+  function startWave(n) {
+    wave = n;
+    spawnQueue = 5 + n * 2; // wave 1: 7 raiders, +2 each wave
+    spawnTimer = 0.4;
+    showBanner('WAVE ' + n + '!');
+    beep(392, 0.15);
+  }
+  function spawnRaider() {
+    var side = Math.floor(Math.random() * 4), x, y;
+    if (side === 0) { x = Math.random() * W; y = ARENA - 10; }
+    else if (side === 1) { x = Math.random() * W; y = H - ARENA + 10; }
+    else if (side === 2) { x = ARENA - 10; y = Math.random() * H; }
+    else { x = W - ARENA + 10; y = Math.random() * H; }
+    var speed = 52 + wave * 6 + Math.random() * 14;
+    raiders.push({ x: x, y: y, r: 15 + Math.random() * 5, speed: speed, stun: 0, wob: Math.random() * 6.28 });
+  }
+  function smashRaider(i, bonus) {
+    var r = raiders[i];
+    raiders.splice(i, 1);
+    kos++; score += bonus;
+    for (var p = 0; p < 8; p++) particles.push({ x: r.x, y: r.y, vx: (Math.random() - 0.5) * 160, vy: (Math.random() - 0.5) * 160, life: 0.4 });
+    if (Math.random() < 0.6) orbs.push({ x: r.x, y: r.y, r: 7 });
+    beep(660, 0.08);
+  }
+  function hitPlayer() {
+    if (invuln > 0 || beastTime > 0) return;
+    if (armor > 0) { armor--; invuln = 1.0; showBanner('ARMOR HELD!'); beep(220, 0.15); return; }
+    lives--; invuln = 1.5;
+    beep(110, 0.3);
+    // knock raiders back so one hit does not chain into another
+    for (var i = 0; i < raiders.length; i++) {
+      var dx = raiders[i].x - player.x, dy = raiders[i].y - player.y;
+      var dd = Math.sqrt(dx * dx + dy * dy) || 1;
+      raiders[i].x += (dx / dd) * 60; raiders[i].y += (dy / dd) * 60;
+    }
+    if (lives <= 0) gameOver();
+  }
+  function gameOver() {
+    state = 'over';
+    if (score > best) {
+      best = score;
+      try { localStorage.setItem('bb-survival-high', String(best)); } catch (e) {}
+    }
+    try { localStorage.setItem('bb-survival-waves', String(careerWaves)); } catch (e) {}
+    document.getElementById('finalScore').textContent = score;
+    document.getElementById('finalWaves').textContent = wavesCleared;
+    document.getElementById('finalTime').textContent = fmtTime(timeAlive);
+    document.getElementById('finalKO').textContent = kos;
+    document.getElementById('finalBest').textContent = best;
+    document.getElementById('overScreen').classList.remove('hidden');
+    document.getElementById('attackBtn').disabled = true;
+    updateHUD();
+  }
+  function nearestVehicle() {
+    var bestV = null, bestD = 62;
+    for (var i = 0; i < vehicles.length; i++) {
+      var v = vehicles[i];
+      if (v.broken) continue;
+      var dx = v.x - player.x, dy = v.y - player.y, dd = Math.sqrt(dx * dx + dy * dy);
+      if (dd < bestD) { bestD = dd; bestV = v; }
+    }
+    return bestV;
+  }
+  function toggleDrive() {
+    if (state !== 'play') return;
+    if (driving) {
+      // GTA-style exit: step out beside the vehicle
+      player.x = Math.max(ARENA + player.r, Math.min(W - ARENA - player.r, driving.x + driving.w / 2 + player.r + 6));
+      player.y = driving.y;
+      driving = null;
+      invuln = 0.5;
+      beep(440, 0.08);
+      updateHUD();
+      return;
+    }
+    var v = nearestVehicle();
+    if (!v) return;
+    driving = v;
+    showBanner(v.label + '! RUN THEM DOWN!');
+    beep(660, 0.12);
+    updateHUD();
+  }
+  function breakdownVehicle(v) {
+    v.broken = true; v.hp = 0;
+    showBanner('VEHICLE SMASHED! IT JUST BREAKS DOWN.');
+    beep(110, 0.3);
+    for (var p = 0; p < 12; p++) particles.push({ x: v.x, y: v.y, vx: (Math.random() - 0.5) * 120, vy: (Math.random() - 0.5) * 120, life: 0.5, color: '#888888' });
+    player.x = Math.max(ARENA + player.r, Math.min(W - ARENA - player.r, v.x + v.w / 2 + player.r + 6));
+    player.y = v.y;
+    driving = null; invuln = 1.0;
+    updateHUD();
+  }
+  function doAttack() {
+    if (state !== 'play' || driving || attackCooldown > 0) return;
+    attackCooldown = 0.55;
+    beep(520, 0.08);
+    var range = 78;
+    for (var i = raiders.length - 1; i >= 0; i--) {
+      var dx = raiders[i].x - player.x, dy = raiders[i].y - player.y;
+      if (Math.sqrt(dx * dx + dy * dy) < range + raiders[i].r) smashRaider(i, beastTime > 0 ? 25 : 10);
+    }
+    for (var p = 0; p < 10; p++) particles.push({ x: player.x, y: player.y, vx: (Math.random() - 0.5) * 220, vy: (Math.random() - 0.5) * 220, life: 0.25 });
+  }
+  function fireWeapon() {
+    if (!heldWeapon || state !== 'play') return;
+    var w = heldWeapon; heldWeapon = null;
+    if (w.type === 'chomp') {
+      beep(700, 0.12);
+      for (var i = raiders.length - 1; i >= 0; i--) {
+        var dx = raiders[i].x - player.x, dy = raiders[i].y - player.y;
+        if (Math.sqrt(dx * dx + dy * dy) < 130 + raiders[i].r) smashRaider(i, 15);
+      }
+      showBanner('GATOR CHOMP!');
+    } else if (w.type === 'bark') {
+      beep(880, 0.2);
+      for (var j = 0; j < raiders.length; j++) raiders[j].stun = 3;
+      showBanner('SONIC BARK!');
+    } else if (w.type === 'stomp') {
+      beep(150, 0.25);
+      for (var k = raiders.length - 1; k >= 0; k--) {
+        var dx2 = raiders[k].x - player.x, dy2 = raiders[k].y - player.y;
+        if (Math.sqrt(dx2 * dx2 + dy2 * dy2) < 115 + raiders[k].r) smashRaider(k, 15);
+      }
+      showBanner('SEISMIC STOMP!');
+    }
+    updateHUD();
+  }
+  function activateBeast() {
+    if (meter < 100 || state !== 'play') return;
+    meter = 0; beastTime = selectedMon().beastTime;
+    beep(990, 0.2);
+    showBanner('BEAST MODE!');
+    updateHUD();
+  }
+
+  // ---------- Input ----------
+  canvas.addEventListener('touchstart', function (e) {
+    e.preventDefault();
+    var t = e.changedTouches[0], rect = canvas.getBoundingClientRect();
+    var tx = (t.clientX - rect.left) * (W / rect.width), ty = (t.clientY - rect.top) * (H / rect.height);
+    var dx = tx - player.x, dy = ty - player.y, dd = Math.sqrt(dx * dx + dy * dy) || 1;
+    joyX = dx / dd; joyY = dy / dd; joyActive = true;
+  }, { passive: false });
+  canvas.addEventListener('touchmove', function (e) {
+    e.preventDefault();
+    var t = e.changedTouches[0], rect = canvas.getBoundingClientRect();
+    var tx = (t.clientX - rect.left) * (W / rect.width), ty = (t.clientY - rect.top) * (H / rect.height);
+    var dx = tx - player.x, dy = ty - player.y, dd = Math.sqrt(dx * dx + dy * dy) || 1;
+    joyX = dx / dd; joyY = dy / dd; joyActive = true;
+  }, { passive: false });
+  function endTouch(e) { e.preventDefault(); joyActive = false; joyX = 0; joyY = 0; }
+  canvas.addEventListener('touchend', endTouch, { passive: false });
+  canvas.addEventListener('touchcancel', endTouch, { passive: false });
+  document.addEventListener('keydown', function (e) {
+    keys[e.key.toLowerCase()] = true;
+    if (e.key === ' ' || e.key.toLowerCase() === 'x') { e.preventDefault(); doAttack(); }
+    if (e.key.toLowerCase() === 'b') activateBeast();
+    if (e.key.toLowerCase() === 'v') fireWeapon();
+    if (e.key.toLowerCase() === 'e') toggleDrive();
+  });
+  document.addEventListener('keyup', function (e) { keys[e.key.toLowerCase()] = false; });
+  document.getElementById('attackBtn').addEventListener('click', doAttack);
+  document.getElementById('beastBtn').addEventListener('click', activateBeast);
+  document.getElementById('weaponBtn').addEventListener('click', fireWeapon);
+  document.getElementById('driveBtn').addEventListener('click', toggleDrive);
+
+  // ---------- Monster select ----------
+  function buildMonsterSelect() {
+    var wrap = document.getElementById('monSelect');
+    wrap.innerHTML = '';
+    for (var i = 0; i < MONSTERS.length; i++) (function (m) {
+      var b = document.createElement('button');
+      b.className = 'mon-btn' + (m.id === selectedMonster ? ' sel' : '');
+      if (careerWaves < m.unlock) {
+        b.textContent = m.name + ' #' + m.num + ' (LOCKED: ' + m.unlock + ' WAVES)';
+        b.disabled = true;
+      } else {
+        b.textContent = m.name + ' #' + m.num;
+        b.addEventListener('click', function () {
+          selectedMonster = m.id;
+          try { localStorage.setItem('bb-survival-monster', m.id); } catch (e) {}
+          buildMonsterSelect();
+        });
+      }
+      wrap.appendChild(b);
+    })(MONSTERS[i]);
+    var mon = selectedMon();
+    document.getElementById('monTrait').textContent = mon.name + ' #' + mon.num + ' — ' + mon.team + ' — ' + mon.traitDesc;
+    document.getElementById('startBest').textContent = best;
+    document.getElementById('startWaves').textContent = careerWaves;
+  }
+  buildMonsterSelect();
+
+  // ---------- Shop (honest preview: takes no money) ----------
+  var UPGRADES = [
+    { id: 'beasts_survival_skin_pack', name: 'Maulers Skin Pack', desc: 'Alternate Maulers jerseys + arena colors for Apocalypse.', price: '$0.99' },
+    { id: 'beasts_survival_fx_pack', name: 'Beast FX Pack', desc: 'Extra Beast Mode glow trails and smash effects.', price: '$0.99' },
+    { id: 'beasts_survival_teammates', name: 'Teammate Pack', desc: 'Unlocks every monster in Monster Select instantly on Google Play.', price: '$1.99' },
+    { id: 'beasts_survival_vex_boss', name: 'Vex Boss Wave', desc: 'A Bonecrusher Vex boss wave at the end of every 5th wave.', price: '$2.99' },
+    { id: 'beasts_survival_skybound', name: 'Skybound League', desc: 'Survival mode in the basketball league arena (future content).', price: '$2.99' },
+    { id: 'beasts_survival_barnstorm', name: 'Barnstorm League', desc: 'Survival mode in the baseball league arena (future content).', price: '$2.99' },
+    { id: 'beasts_survival_season_pass', name: 'Season Pass', desc: 'All packs above + future Apocalypse content.', price: '$4.99' }
+  ];
+  var shopReturn = 'start';
+  function buildShop() {
+    var list = document.getElementById('packList');
+    list.innerHTML = '';
+    for (var i = 0; i < UPGRADES.length; i++) (function (p) {
+      var d = document.createElement('div');
+      d.className = 'pack';
+      var h = document.createElement('h3'); h.textContent = p.name; d.appendChild(h);
+      var pp = document.createElement('p'); pp.textContent = p.desc; d.appendChild(pp);
+      var row = document.createElement('div'); row.className = 'row';
+      var pr = document.createElement('span'); pr.className = 'price'; pr.textContent = p.price; row.appendChild(pr);
+      var btn = document.createElement('button'); btn.className = 'unlock-btn';
+      btn.textContent = 'UNLOCKS ON GOOGLE PLAY';
+      btn.addEventListener('click', function () {
+        document.getElementById('shopNotice').textContent = p.name + ' unlocks when the game launches on Google Play. No payment is taken here.';
+      });
+      row.appendChild(btn); d.appendChild(row); list.appendChild(d);
+    })(UPGRADES[i]);
+  }
+  buildShop();
+  function openShop(from) {
+    shopReturn = from;
+    document.getElementById('startScreen').classList.add('hidden');
+    document.getElementById('overScreen').classList.add('hidden');
+    document.getElementById('shopScreen').classList.remove('hidden');
+  }
+  document.getElementById('shopBtnStart').addEventListener('click', function () { openShop('start'); });
+  document.getElementById('shopBtnOver').addEventListener('click', function () { openShop('over'); });
+  document.getElementById('shopBackBtn').addEventListener('click', function () {
+    document.getElementById('shopScreen').classList.add('hidden');
+    if (shopReturn === 'over' && state === 'over') document.getElementById('overScreen').classList.remove('hidden');
+    else document.getElementById('startScreen').classList.remove('hidden');
+  });
+
+  // ---------- Start / restart ----------
+  function startGame() {
+    document.getElementById('startScreen').classList.add('hidden');
+    document.getElementById('overScreen').classList.add('hidden');
+    document.getElementById('shopScreen').classList.add('hidden');
+    state = 'play';
+    reset();
+    updateHUD();
+    lastTime = performance.now();
+    requestAnimationFrame(loop);
+  }
+  document.getElementById('startBtn').addEventListener('click', startGame);
+  document.getElementById('againBtn').addEventListener('click', function () {
+    buildMonsterSelect();
+    startGame();
+  });
+
+  // ---------- Draw ----------
+  function drawMonster(x, y, r, mon, beastOn, stunRing) {
+    // v3 art pass: broad shoulders, powerful build, neon jersey trim + electric sparks, glowing eyes.
+    // Jerseys are 100% ORIGINAL designs in each team's own colors (never a real team's jersey).
+    var eyeColor = mon.eye === 'spectrum'
+      ? 'hsl(' + (Math.floor(performance.now() / 20) % 360) + ',100%,60%)' : mon.eye;
+    ctx.save();
+    ctx.translate(x, y);
+    if (beastOn) { ctx.shadowColor = '#39ff6a'; ctx.shadowBlur = 22; }
+    // broad shoulders (strong build)
+    ctx.fillStyle = mon.skin;
+    ctx.beginPath(); ctx.ellipse(-r * 0.95, -r * 0.1, r * 0.55, r * 0.45, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(r * 0.95, -r * 0.1, r * 0.55, r * 0.45, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = mon.jersey;
+    ctx.fillRect(-r * 0.75, -r * 0.55, r * 1.5, r * 1.1);
+    // neon trim: glowing outline + electric spark ticks (animated)
+    ctx.shadowColor = mon.trim; ctx.shadowBlur = 12;
+    ctx.strokeStyle = mon.trim; ctx.lineWidth = 3;
+    ctx.strokeRect(-r * 0.75, -r * 0.55, r * 1.5, r * 1.1);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = mon.trim;
+    ctx.fillRect(-r * 0.75, -r * 0.55, r * 1.5, 3);
+    var t = performance.now() / 200;
+    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5;
+    for (var si = 0; si < 4; si++) {
+      var sa = t + si * 1.7, sx = Math.cos(sa) * (r + 4), sy = Math.sin(sa) * (r + 4);
+      ctx.beginPath(); ctx.moveTo(sx - 4, sy); ctx.lineTo(sx + 4, sy); ctx.moveTo(sx, sy - 4); ctx.lineTo(sx, sy + 4); ctx.stroke();
+    }
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold ' + Math.max(11, Math.floor(r * 0.8)) + 'px Arial';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(mon.num, 0, 1);
+    // glowing eyes (distinct color per monster)
+    ctx.shadowColor = eyeColor; ctx.shadowBlur = 14;
+    ctx.fillStyle = eyeColor;
+    ctx.beginPath(); ctx.arc(-r * 0.4, -r * 0.75, Math.max(4, r * 0.18), 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(r * 0.4, -r * 0.75, Math.max(4, r * 0.18), 0, Math.PI * 2); ctx.fill();
+    ctx.shadowBlur = 0;
+    if (stunRing) {
+      ctx.strokeStyle = '#ffd23f'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(0, 0, r + 6, 0, Math.PI * 2); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function drawVehicle(v) {
+    ctx.save();
+    ctx.translate(v.x, v.y);
+    if (v.broken) {
+      ctx.fillStyle = '#333333';
+      ctx.fillRect(-v.w / 2, -v.h / 2, v.w, v.h);
+      ctx.fillStyle = '#888888'; ctx.font = 'bold 10px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('BROKEN', 0, 0);
+    } else {
+      ctx.shadowColor = v.neon; ctx.shadowBlur = 16;
+      ctx.fillStyle = v.color;
+      ctx.beginPath(); ctx.roundRect(-v.w / 2, -v.h / 2, v.w, v.h, 8); ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = v.neon; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.roundRect(-v.w / 2, -v.h / 2, v.w, v.h, 8); ctx.stroke();
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      ctx.fillRect(-v.w / 4, -v.h / 2 + 4, v.w / 2, v.h - 8);
+      ctx.fillStyle = '#111111';
+      ctx.fillRect(-v.w / 2 - 3, -v.h / 2 - 2, 8, 6); ctx.fillRect(-v.w / 2 - 3, v.h / 2 - 4, 8, 6);
+      ctx.fillRect(v.w / 2 - 5, -v.h / 2 - 2, 8, 6); ctx.fillRect(v.w / 2 - 5, v.h / 2 - 4, 8, 6);
+      ctx.fillStyle = '#ffffff'; ctx.font = 'bold 9px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(v.type === 'bus' ? 'NEON BUS' : 'CAR', 0, 0);
+      if (driving === v) { ctx.fillStyle = '#ffd23f'; ctx.font = 'bold 10px Arial'; ctx.fillText('YOU', 0, -v.h / 2 - 10); }
+    }
+    ctx.restore();
+  }
+  function draw() {
+    // v3 open lot: asphalt lot with streets + parking stalls (no fenced pen)
+    ctx.fillStyle = '#2e332e';
+    ctx.fillRect(0, 0, W, H);
+    // streets: one horizontal + one vertical road with lane dashes
+    ctx.fillStyle = '#1c1e1c';
+    ctx.fillRect(0, 330, W, 56);
+    ctx.fillRect(190, 0, 44, H);
+    ctx.strokeStyle = '#ffd23f'; ctx.lineWidth = 2; ctx.setLineDash([14, 14]);
+    ctx.beginPath(); ctx.moveTo(0, 358); ctx.lineTo(W, 358); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(212, 0); ctx.lineTo(212, H); ctx.stroke();
+    ctx.setLineDash([]);
+    // parking lots: stall lines on both sides of the roads
+    ctx.strokeStyle = 'rgba(255,255,255,0.45)'; ctx.lineWidth = 1;
+    for (var sx = 20; sx < W; sx += 52) {
+      ctx.beginPath(); ctx.moveTo(sx, 100); ctx.lineTo(sx, 150); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(sx, 430); ctx.lineTo(sx, 480); ctx.stroke();
+    }
+    // swamp patches at the corners (The Muck flavor, not a fence)
+    ctx.fillStyle = '#14532a';
+    for (var i = 0; i < decorations.length; i++) {
+      var d = decorations[i];
+      ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.strokeStyle = '#8a7a5c'; ctx.lineWidth = 4;
+    ctx.strokeRect(ARENA, ARENA, W - ARENA * 2, H - ARENA * 2);
+    // orbs
+    for (var o = 0; o < orbs.length; o++) {
+      ctx.fillStyle = '#39ff6a';
+      ctx.beginPath(); ctx.arc(orbs[o].x, orbs[o].y, orbs[o].r, 0, Math.PI * 2); ctx.fill();
+    }
+    // weapon pickups
+    for (var w = 0; w < pickups.length; w++) {
+      var pk = pickups[w];
+      ctx.fillStyle = pk.type === 'bark' ? '#ffd23f' : (pk.type === 'stomp' ? '#ff7a00' : '#7a2ea0');
+      ctx.beginPath(); ctx.arc(pk.x, pk.y, 12, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 11px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(pk.type === 'bark' ? 'BARK' : (pk.type === 'stomp' ? 'STOMP' : 'CHOMP'), pk.x, pk.y);
+    }
+    // parked/driven vehicles
+    for (var vi2 = 0; vi2 < vehicles.length; vi2++) drawVehicle(vehicles[vi2]);
+    // raiders (black/red, no jersey numbers — they are the enemy swarm)
+    for (var r = 0; r < raiders.length; r++) {
+      var rd = raiders[r];
+      ctx.fillStyle = '#1a1a1a';
+      ctx.beginPath(); ctx.arc(rd.x, rd.y, rd.r, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#c8102e'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(rd.x, rd.y, rd.r, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillStyle = '#ff2222';
+      ctx.beginPath(); ctx.arc(rd.x - 5, rd.y - 4, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(rd.x + 5, rd.y - 4, 3, 0, Math.PI * 2); ctx.fill();
+      if (rd.stun > 0) {
+        ctx.strokeStyle = '#ffd23f'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(rd.x, rd.y, rd.r + 5, 0, Math.PI * 2); ctx.stroke();
+      }
+    }
+    // particles
+    for (var p = 0; p < particles.length; p++) {
+      ctx.fillStyle = particles[p].color || 'rgba(255,210,63,0.8)';
+      ctx.fillRect(particles[p].x - 2, particles[p].y - 2, 4, 4);
+    }
+    // player (hidden inside the vehicle while driving)
+    if ((state === 'play' || state === 'over') && !driving) {
+      var flicker = invuln > 0 && Math.floor(performance.now() / 120) % 2 === 0;
+      if (!flicker) drawMonster(player.x, player.y, player.r, selectedMon(), beastTime > 0, false);
+    }
+  }
+
+  // ---------- Loop ----------
+  function loop(now) {
+    if (state !== 'play') { draw(); return; }
+    var dt = Math.min(0.05, (now - lastTime) / 1000);
+    lastTime = now;
+    timeAlive += dt;
+    score = Math.floor(timeAlive * 2) + kos * 10 + wavesCleared * 100;
+    if (attackCooldown > 0) attackCooldown -= dt;
+    if (beastTime > 0) beastTime -= dt;
+    if (invuln > 0) invuln -= dt;
+    if (bannerTimer > 0) {
+      bannerTimer -= dt;
+      if (bannerTimer <= 0) document.getElementById('banner').style.display = 'none';
+    }
+    // movement (keyboard or touch joystick) — on foot, or driving the vehicle
+    var mx = 0, my = 0;
+    if (keys['arrowleft'] || keys['a']) mx -= 1;
+    if (keys['arrowright'] || keys['d']) mx += 1;
+    if (keys['arrowup'] || keys['w']) my -= 1;
+    if (keys['arrowdown'] || keys['s']) my += 1;
+    if (joyActive) { mx = joyX; my = joyY; }
+    var mm = Math.sqrt(mx * mx + my * my);
+    var vehSpeed = 0;
+    if (driving) {
+      if (mm > 0.1) {
+        vehSpeed = driving.type === 'bus' ? 200 : 245;
+        driving.x += (mx / Math.max(1, mm)) * vehSpeed * dt;
+        driving.y += (my / Math.max(1, mm)) * vehSpeed * dt;
+        driving.angle = Math.atan2(my, mx);
+      }
+      driving.x = Math.max(ARENA + driving.w / 2, Math.min(W - ARENA - driving.w / 2, driving.x));
+      driving.y = Math.max(ARENA + driving.h / 2, Math.min(H - ARENA - driving.h / 2, driving.y));
+      player.x = driving.x; player.y = driving.y;
+    } else if (mm > 0.1) {
+      var mon = selectedMon();
+      var sp = 165 * mon.speed;
+      player.x += (mx / Math.max(1, mm)) * sp * dt;
+      player.y += (my / Math.max(1, mm)) * sp * dt;
+      player.face = Math.atan2(my, mx);
+    }
+    player.x = Math.max(ARENA + player.r, Math.min(W - ARENA - player.r, player.x));
+    player.y = Math.max(ARENA + player.r, Math.min(H - ARENA - player.r, player.y));
+    if (vehicleInvuln > 0) vehicleInvuln -= dt;
+    // neon spark trail while playing
+    sparkTimer -= dt;
+    if (sparkTimer <= 0) {
+      sparkTimer = 0.15;
+      particles.push({ x: player.x + (Math.random() - 0.5) * 40, y: player.y + (Math.random() - 0.5) * 40, vx: 0, vy: -20, life: 0.3, color: selectedMon().trim });
+    }
+    // spawning
+    if (spawnQueue > 0) {
+      spawnTimer -= dt;
+      if (spawnTimer <= 0) { spawnRaider(); spawnQueue--; spawnTimer = Math.max(0.25, 0.85 - wave * 0.04); }
+    }
+    // raiders chase (the vehicle when driving, the monster on foot)
+    for (var i = 0; i < raiders.length; i++) {
+      var rd = raiders[i];
+      if (rd.stun > 0) { rd.stun -= dt; continue; }
+      rd.wob += dt * 3;
+      var tx = driving ? driving.x : player.x, ty = driving ? driving.y : player.y;
+      var dx = tx - rd.x, dy = ty - rd.y;
+      var dd = Math.sqrt(dx * dx + dy * dy) || 1;
+      rd.x += (dx / dd) * rd.speed * dt + Math.cos(rd.wob) * 6 * dt;
+      rd.y += (dy / dd) * rd.speed * dt + Math.sin(rd.wob) * 6 * dt;
+    }
+    // contact: driving run-downs (cartoon bounce, no injuries) or vehicle damage; on foot as before
+    if (driving) {
+      for (var j = raiders.length - 1; j >= 0; j--) {
+        var r2 = raiders[j];
+        var ddx = r2.x - driving.x, ddy = r2.y - driving.y;
+        if (Math.sqrt(ddx * ddx + ddy * ddy) < r2.r + driving.w / 2) {
+          if (vehSpeed > 80 || beastTime > 0 || r2.stun > 0) {
+            // run down: Raider bounces off comically, counts as a knockout
+            for (var bp = 0; bp < 6; bp++) particles.push({ x: r2.x, y: r2.y, vx: (Math.random() - 0.5) * 260, vy: -Math.random() * 180, life: 0.4, color: '#ff5340' });
+            smashRaider(j, 10);
+          } else if (vehicleInvuln <= 0) {
+            driving.hp--; vehicleInvuln = 0.6;
+            r2.x += (ddx / (Math.sqrt(ddx * ddx + ddy * ddy) || 1)) * -60;
+            r2.y += (ddy / (Math.sqrt(ddx * ddx + ddy * ddy) || 1)) * -60;
+            beep(150, 0.15);
+            if (driving.hp <= 0) { var bv = driving; breakdownVehicle(bv); break; }
+          }
+        }
+      }
+    } else {
+      for (var j2 = raiders.length - 1; j2 >= 0; j2--) {
+        var r3 = raiders[j2];
+        var ddx2 = r3.x - player.x, ddy2 = r3.y - player.y;
+        if (Math.sqrt(ddx2 * ddx2 + ddy2 * ddy2) < r3.r + player.r) {
+          if (beastTime > 0) smashRaider(j2, 25);
+          else if (r3.stun > 0) smashRaider(j2, 10);
+          else hitPlayer();
+        }
+      }
+    }
+    // orbs: fill meter
+    for (var k = orbs.length - 1; k >= 0; k--) {
+      var ob = orbs[k];
+      var odx = ob.x - player.x, ody = ob.y - player.y;
+      if (Math.sqrt(odx * odx + ody * ody) < ob.r + player.r + 6) {
+        orbs.splice(k, 1);
+        meter = Math.min(100, meter + 10 * selectedMon().meterGain);
+        beep(780, 0.06);
+      }
+    }
+    // weapon pickup drops
+    weaponTimer -= dt;
+    if (weaponTimer <= 0) {
+      weaponTimer = 18 + Math.random() * 8;
+      var types = ['chomp', 'bark', 'stomp'];
+      var t = types[Math.floor(Math.random() * types.length)];
+      pickups.push({ x: 40 + Math.random() * (W - 80), y: 90 + Math.random() * (H - 150), type: t, label: t === 'bark' ? 'SONIC BARK' : (t === 'stomp' ? 'SEISMIC STOMP' : 'GATOR CHOMP') });
+    }
+    for (var w2 = pickups.length - 1; w2 >= 0; w2--) {
+      var pk2 = pickups[w2];
+      var pdx = pk2.x - player.x, pdy = pk2.y - player.y;
+      if (Math.sqrt(pdx * pdx + pdy * pdy) < 14 + player.r) {
+        heldWeapon = pk2;
+        pickups.splice(w2, 1);
+        showBanner(pk2.label + ' READY!');
+        beep(840, 0.1);
+      }
+    }
+    // particles decay
+    for (var p2 = particles.length - 1; p2 >= 0; p2--) {
+      particles[p2].x += particles[p2].vx * dt;
+      particles[p2].y += particles[p2].vy * dt;
+      particles[p2].life -= dt;
+      if (particles[p2].life <= 0) particles.splice(p2, 1);
+    }
+    // wave cleared?
+    if (spawnQueue <= 0 && raiders.length === 0 && state === 'play') {
+      wavesCleared++;
+      careerWaves++;
+      try { localStorage.setItem('bb-survival-waves', String(careerWaves)); } catch (e) {}
+      score += 100;
+      var mon2 = selectedMon();
+      if ((mon2.id === 'tusk' || mon2.id === 'marv')) armor = 1;
+      if (lives < 5 && wavesCleared % 3 === 0) { lives++; showBanner('WAVE ' + wavesCleared + ' CLEARED! +1 LIFE'); }
+      else showBanner('WAVE ' + wavesCleared + ' CLEARED!');
+      beep(523, 0.12); setTimeout(function () { beep(784, 0.15); }, 130);
+      buildMonsterSelect();
+      var zwN = wavesCleared + 1;
+      if (zwN > 3 && window.ZWGate && !ZWGate.allowed('apocalypse')) {
+        state = 'zwlock';
+        ZWGate.lock('apocalypse', 'Wave ' + zwN, function () { state = 'play'; lastTime = performance.now(); startWave(zwN); requestAnimationFrame(loop); });
+      } else startWave(zwN);
+    }
+    updateHUD();
+    draw();
+    if (state === 'play') requestAnimationFrame(loop);
+  }
+  updateHUD();
+  draw();
+})();
+</script>
+</body>
+</html>

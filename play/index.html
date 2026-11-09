@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#140b2e">
+<title>Zaynyg World: Comics &amp; Games</title>
+<meta name="description" content="Family-clean comics and games from Zaynyg World: Bible Heroes, Glitch Kids, North Park and Nuclear Monster College Football.">
+<link rel="icon" href="assets/icon-192.png">
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><img src="assets/icon-192.png" alt=""><div><b>ZAYNYG WORLD</b><span>Comics &amp; Games</span></div></div>
+  <button class="pass-chip" id="passChip" type="button">⭐ Get Pass</button>
+  <button class="icon-btn" id="parentsBtn" type="button" aria-label="Parents and settings">⚙️</button>
+</header>
+
+<main id="views">
+  <section class="view" id="view-comics" data-tab="comics"></section>
+  <section class="view" id="view-games" data-tab="games" hidden></section>
+  <section class="view" id="view-shop" data-tab="shop" hidden></section>
+  <section class="view" id="view-pass" data-tab="pass" hidden></section>
+</main>
+
+<nav class="tabs" id="tabs">
+  <button data-tab="comics" class="on" type="button"><i>📖</i>Comics</button>
+  <button data-tab="games" type="button"><i>🎮</i>Games</button>
+  <button data-tab="shop" type="button"><i>🛍️</i>Shop</button>
+  <button data-tab="pass" type="button"><i>⭐</i>Pass</button>
+</nav>
+
+<!-- full-screen comic reader -->
+<div class="layer" id="reader" hidden>
+  <div class="reader-top"><button class="back" id="rBack" type="button">‹ Back</button><b id="rTitle"></b><span id="rCount"></span></div>
+  <div class="reader-stage" id="rStage"></div>
+  <div class="reader-nav"><button id="rPrev" type="button">‹ Prev</button><div class="bar"><i id="rBar"></i></div><button id="rNext" type="button">Next ›</button></div>
+</div>
+
+<!-- full-screen game -->
+<div class="layer" id="game" hidden>
+  <iframe id="gameFrame" title="Game" allow="autoplay; fullscreen"></iframe>
+  <button class="game-exit" id="gExit" type="button" aria-label="Back to hub">✕ Exit</button>
+</div>
+
+<!-- modal sheet (locks, pass offer, parent gate, parents corner) -->
+<div class="modal" id="modal" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="zw-config.js"></script>
+<script src="comics/faith-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

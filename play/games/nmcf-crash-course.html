@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script src="zw-gate.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>NUCLEAR MONSTER COLLEGE FOOTBALL: Crash Course</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; background: #0a0f0a; height: 100%; overflow: hidden; }
+  body { font-family: Arial, Helvetica, sans-serif; color: #fff; display: flex; justify-content: center; }
+  #wrap { position: relative; width: 100%; max-width: 480px; height: 100%; max-height: 900px; }
+  canvas { display: block; width: 100%; height: 100%; background: #1e7a34; touch-action: none; }
+  #hud {
+    position: absolute; top: 0; left: 0; right: 0; padding: 8px 10px;
+    background: rgba(0,0,0,0.55); font-weight: bold; font-size: 14px;
+    display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; z-index: 5;
+  }
+  #hud .stat span { color: #ffd23f; }
+  #meterWrap { flex: 1 1 120px; height: 14px; background: #222; border: 2px solid #fff; border-radius: 8px; overflow: hidden; }
+  #meterFill { height: 100%; width: 0%; background: linear-gradient(90deg, #39ff6a, #c6ff00); transition: width 0.15s; }
+  #stamWrap { flex: 1 1 100px; height: 12px; background: #222; border: 2px solid #fff; border-radius: 8px; overflow: hidden; }
+  #stamFill { height: 100%; width: 100%; background: linear-gradient(90deg, #ffd23f, #ff7a00); transition: width 0.15s; }
+  #patBtn {
+    position: absolute; left: 50%; bottom: 110px; transform: translateX(-50%); z-index: 6;
+    width: 140px; height: 64px; border-radius: 14px;
+    background: #ffd23f; color: #111; border: 3px solid #fff;
+    font-size: 16px; font-weight: 900; cursor: pointer; display: none;
+  }
+  #muteBtn {
+    background: #111; color: #fff; border: 2px solid #fff; border-radius: 8px;
+    font-weight: bold; font-size: 12px; padding: 4px 8px; cursor: pointer;
+  }
+  #beastBtn {
+    position: absolute; right: 14px; bottom: 22px; z-index: 6;
+    width: 118px; height: 118px; border-radius: 50%;
+    background: #39ff6a; color: #04220a; border: 4px solid #fff;
+    font-size: 17px; font-weight: 900; line-height: 1.15; cursor: pointer;
+    box-shadow: 0 0 18px rgba(57,255,106,0.7); touch-action: manipulation;
+  }
+  #beastBtn:disabled { background: #555; color: #ccc; box-shadow: none; opacity: 0.65; }
+  #beastBtn.beast-on { background: #c6ff00; animation: pulse 0.5s infinite alternate; }
+  #weaponBtn {
+    position: absolute; left: 14px; bottom: 22px; z-index: 6;
+    width: 112px; height: 64px; border-radius: 14px;
+    background: #7a2ea0; color: #fff; border: 3px solid #fff;
+    font-size: 13px; font-weight: 900; line-height: 1.2; cursor: pointer; display: none;
+  }
+  #weaponBtn:disabled { opacity: 0.4; }
+  #jumpBtn {
+    position: absolute; left: 14px; bottom: 94px; z-index: 6;
+    width: 112px; height: 56px; border-radius: 14px;
+    background: #ff7a00; color: #fff; border: 3px solid #fff;
+    font-size: 16px; font-weight: 900; cursor: pointer; display: none;
+  }
+  #monSelect { width: 100%; max-width: 370px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 10px 0 4px; }
+  .mon-btn { background: #111; color: #fff; border: 2px solid #fff; border-radius: 10px; font-size: 12px; font-weight: 900; padding: 8px 10px; cursor: pointer; }
+  .mon-btn.sel { background: #ff7a00; }
+  .mon-btn:disabled { opacity: 0.45; cursor: default; }
+  #monTrait { font-size: 14px; color: #ffd23f; font-weight: bold; min-height: 20px; }
+  @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.08); } }
+  .screen {
+    position: absolute; inset: 0; z-index: 10; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+    background: rgba(0,0,0,0.78); padding: 24px;
+    justify-content: flex-start; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; touch-action: pan-y;
+  }
+  /* center when it fits, scroll from the top when it doesn't (was clipping title + start button on short screens) */
+  .screen > :first-child { margin-top: auto !important; }
+  .screen > :last-child { margin-bottom: auto !important; }
+  .screen.hidden { display: none; }
+  .screen h1 { font-size: 34px; margin: 0 0 6px; color: #ffd23f; letter-spacing: 1px; }
+  .screen h2 { font-size: 26px; margin: 0 0 10px; color: #ff5340; }
+  .screen .sub { font-size: 18px; color: #7ec8ff; margin: 0 0 14px; font-weight: bold; }
+  .screen p { font-size: 16px; line-height: 1.5; max-width: 340px; margin: 6px 0; }
+  .screen .quote { font-style: italic; color: #ffd23f; }
+  .big-btn {
+    margin-top: 18px; background: #ff7a00; color: #fff; border: 3px solid #fff;
+    border-radius: 14px; font-size: 22px; font-weight: 900; padding: 14px 30px; cursor: pointer;
+  }
+  .score-line { font-size: 19px; font-weight: bold; }
+  .score-line span { color: #ffd23f; }
+  #banner {
+    position: absolute; left: 0; right: 0; top: 38%; text-align: center; z-index: 7;
+    font-size: 40px; font-weight: 900; color: #ffd23f; text-shadow: 3px 3px 0 #000;
+    display: none; pointer-events: none;
+  }
+  .shop-btn {
+    margin-top: 12px; background: #1e6fb8; color: #fff; border: 3px solid #fff;
+    border-radius: 14px; font-size: 18px; font-weight: 900; padding: 10px 24px; cursor: pointer;
+  }
+  #shopScreen { justify-content: flex-start; overflow-y: auto; padding-top: 16px; }
+  #shopScreen h1 { font-size: 28px; }
+  #shopScreen .billing-note {
+    font-size: 14px; line-height: 1.45; color: #ffd23f; max-width: 340px; margin: 4px 0 12px;
+  }
+  #packList { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 10px; }
+  .pack {
+    background: rgba(255,255,255,0.08); border: 2px solid #fff; border-radius: 12px;
+    padding: 10px 12px; text-align: left;
+  }
+  .pack h3 { margin: 0 0 4px; font-size: 17px; color: #7ec8ff; }
+  .pack p { margin: 0 0 8px; font-size: 14px; line-height: 1.4; max-width: none; }
+  .pack .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .pack .price { font-size: 18px; font-weight: 900; color: #ffd23f; white-space: nowrap; }
+  .unlock-btn {
+    background: #333; color: #fff; border: 2px solid #ffd23f; border-radius: 10px;
+    font-size: 12px; font-weight: 900; padding: 8px 10px; cursor: pointer; text-align: center;
+  }
+  #shopNotice { min-height: 20px; font-size: 14px; color: #39ff6a; font-weight: bold; margin: 10px 0 4px; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="game" width="420" height="700"></canvas>
+
+  <div id="hud">
+    <div class="stat">YDS <span id="hudYards">0</span></div>
+    <div class="stat">TD <span id="hudTD">0</span></div>
+    <div class="stat">SCORE <span id="hudScore">0</span></div>
+    <div class="stat">LIVES <span id="hudLives">●●●</span></div>
+    <div class="stat">DOWN <span id="hudDown">1ST &amp; 10</span></div>
+    <div id="meterWrap"><div id="meterFill"></div></div>
+    <div class="stat">STAM</div>
+    <div id="stamWrap"><div id="stamFill"></div></div>
+    <button id="muteBtn" type="button">SOUND: ON</button>
+  </div>
+
+  <div id="banner">TOUCHDOWN!</div>
+
+  <button id="beastBtn" type="button" disabled>BEAST<br>MODE</button>
+  <button id="weaponBtn" type="button" disabled>WEAPON</button>
+  <button id="jumpBtn" type="button">JUMP</button>
+  <button id="patBtn" type="button">KICK PAT!</button>
+
+  <div id="startScreen" class="screen">
+    <h1>NUCLEAR MONSTER COLLEGE FOOTBALL</h1>
+    <div class="sub">CRASH COURSE</div>
+    <p style="font-size:13px;opacity:.8;margin-top:2px;">A Borderline Beasts game</p>
+    <p>Choose your beast — Chomp starts free, the rest unlock by scoring touchdowns.</p>
+    <p>Dodge the Redline Raiders (black &amp; red). Grab green energy orbs to fill the BEAST METER. When it is full, smash the BEAST MODE button and run through everybody.</p>
+    <p>MADDEN-STYLE DRIVE: 4 downs to gain 10 yards — watch the yellow FIRST DOWN line on the field. Gain 10 for a fresh set of downs; get stopped on 4th down and it is a turnover (the drive restarts from that spot). Touchdown every 100 yards, then kick the PAT: tap KICK PAT (or spacebar) when the needle is in the green for +1. Watch your STAMINA bar — sprinting and dodging drain it, easing off refills it, and running on empty slows you down. 3 hits and you fumble it away — but every 2 touchdowns and every golden LIFE ORB earns +1 life (max 5 helmets).</p>
+    <p>Pick your beast:</p>
+    <div id="monSelect"></div>
+    <p id="monTrait"></p>
+    <p class="quote">Commissioner Jose says: RUN IT!</p>
+    <p>Best score: <span id="startBest">0</span></p>
+    <button class="big-btn" id="kickoffBtn" type="button">TAP TO KICK OFF</button>
+    <button class="shop-btn" id="shopBtnStart" type="button">UPGRADES</button>
+    <p>Move: drag or arrow keys &nbsp;|&nbsp; Sprint: hold Shift (or drag far) &nbsp;|&nbsp; Beast Mode: button or spacebar &nbsp;|&nbsp; Weapon: button or X &nbsp;|&nbsp; Buggy jump: button or W &nbsp;|&nbsp; PAT: button or spacebar</p>
+  </div>
+
+  <div id="overScreen" class="screen hidden">
+    <h2>FUMBLE! GAME OVER</h2>
+    <p class="score-line">SCORE: <span id="finalScore">0</span></p>
+    <p class="score-line">YARDS: <span id="finalYards">0</span> &nbsp; TDs: <span id="finalTD">0</span></p>
+    <p class="score-line">PATs: <span id="finalPAT">0</span></p>
+    <p class="score-line">BEST: <span id="finalBest">0</span></p>
+    <p class="quote">Commissioner Jose says: Shake it off. Run it back.</p>
+    <button class="big-btn" id="againBtn" type="button">RUN IT BACK</button>
+    <button class="shop-btn" id="shopBtnOver" type="button">UPGRADES</button>
+  </div>
+
+  <div id="shopScreen" class="screen hidden">
+    <h1>UPGRADE SHOP</h1>
+    <p class="billing-note">Upgrades unlock when the game launches on Google Play. This version takes no payment — every button below just shows what will be available.</p>
+    <div id="packList"></div>
+    <p id="shopNotice"></p>
+    <button class="big-btn" id="shopBackBtn" type="button">BACK TO GAME</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var canvas = document.getElementById('game');
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+
+  var hudYards = document.getElementById('hudYards');
+  var hudTD = document.getElementById('hudTD');
+  var hudScore = document.getElementById('hudScore');
+  var hudLives = document.getElementById('hudLives');
+  var meterFill = document.getElementById('meterFill');
+  var beastBtn = document.getElementById('beastBtn');
+  var muteBtn = document.getElementById('muteBtn');
+  var banner = document.getElementById('banner');
+  var startScreen = document.getElementById('startScreen');
+  var overScreen = document.getElementById('overScreen');
+  var weaponBtn = document.getElementById('weaponBtn');
+  var jumpBtn = document.getElementById('jumpBtn');
+  var patBtn = document.getElementById('patBtn');
+  var hudDown = document.getElementById('hudDown');
+  var stamFill = document.getElementById('stamFill');
+
+  // ---------- Audio: simple WebAudio bleeps, no copyrighted music ----------
+  var audioCtx = null, muted = false;
+  function ensureAudio() {
+    if (!audioCtx) {
+      try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { audioCtx = null; }
+    }
+    if (audioCtx && audioCtx.state === 'suspended') { audioCtx.resume(); }
+  }
+  function beep(freq, dur, type) {
+    if (muted || !audioCtx) return;
+    try {
+      var osc = audioCtx.createOscillator();
+      var gain = audioCtx.createGain();
+      osc.type = type || 'square';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(); osc.stop(audioCtx.currentTime + dur);
+    } catch (e) { /* audio is a nicety, never break the game */ }
+  }
+  muteBtn.addEventListener('click', function () {
+    muted = !muted;
+    muteBtn.textContent = muted ? 'SOUND: OFF' : 'SOUND: ON';
+  });
+
+  // ---------- Game state ----------
+  var state = 'start'; // start | play | over
+  var player, raiders, orbs, particles;
+  var yards, score, touchdowns, lives, meter, beastTime, invuln;
+  var fieldOffset, raiderTimer, orbTimer, bannerTimer;
+  var moveLeft = false, moveRight = false, touchX = null;
+  var lastTime = 0, shake = 0;
+  var best = 0;
+  try { best = parseInt(localStorage.getItem('bb-crash-course-high') || '0', 10) || 0; } catch (e) { best = 0; }
+  document.getElementById('startBest').textContent = best;
+
+  // ---------- v2: monsters (ONLY characters with canon jersey numbers) ----------
+  var MONSTERS = [
+    { id: 'chomp', name: 'CHOMP DELGADO', num: '77', team: 'Swampjaw Maulers', jersey: '#1e6fb8', trim: '#ff7a00', skin: '#2e8b57', eye: '#ffd23f', trait: 'balanced', traitDesc: 'Balanced — the original. No bonuses, no weaknesses.', unlock: 0, speed: 1.0, agility: 1.0, meterGain: 1.0, beastTime: 5 },
+    { id: 'talon', name: 'TALON OKAFOR', num: '7', team: 'Cloudbreak Kings', jersey: '#7b5cff', trim: '#c0c0c0', skin: '#8f7bd8', eye: '#8b5cf6', trait: 'agile', traitDesc: 'Agile — smaller, quicker, dodges like wind.', unlock: 5, speed: 1.15, agility: 1.25, meterGain: 1.0, beastTime: 5, small: true },
+    { id: 'coil', name: 'COIL TANAKA', num: '1', team: 'Nightcourt Serpents', jersey: '#111111', trim: '#22d3ee', skin: '#1a3a3a', eye: '#22d3ee', trait: 'tight', traitDesc: 'Tight turning — snaps to your finger instantly.', unlock: 10, speed: 1.0, agility: 1.6, meterGain: 1.0, beastTime: 5 },
+    { id: 'stinger', name: 'STINGER RUIZ', num: '13', team: 'Dustdevil Outlaws', jersey: '#d4a017', trim: '#111111', skin: '#3a2a12', eye: '#ffb000', trait: 'fast', traitDesc: 'Fastest feet on the field — pure speed.', unlock: 15, speed: 1.3, agility: 1.1, meterGain: 1.0, beastTime: 5 },
+    { id: 'tusk', name: 'TUSK VOLKOV', num: '99', team: 'Frostbite Sentinels', jersey: '#5a6b7a', trim: '#7fe3f0', skin: '#6b7f8f', eye: '#bfefff', trait: 'tough', traitDesc: 'Tough — armor absorbs one hit, refreshed every touchdown.', unlock: 20, speed: 0.9, agility: 0.9, meterGain: 1.0, beastTime: 5 },
+    { id: 'vex', name: 'BONECRUSHER VEX', num: '77', team: 'Redline Raiders (villain-play)', jersey: '#111111', trim: '#c8102e', skin: '#222222', eye: '#ff2222', numColor: '#ff5566', trait: 'rage', traitDesc: 'Rage — Beast Mode burns longer (7 seconds).', unlock: 25, speed: 1.0, agility: 1.0, meterGain: 1.0, beastTime: 7 },
+    { id: 'prism', name: 'PRISM', num: '3', team: 'The Border Itself', jersey: '#2b2b2b', trim: '#ffffff', skin: '#4a4a6a', eye: 'spectrum', trait: 'prism', traitDesc: 'Spectrum — energy orbs fill the Beast Meter 30% faster.', unlock: 30, speed: 1.05, agility: 1.1, meterGain: 1.3, beastTime: 5 },
+    { id: 'snap', name: 'SNAP DELGADO', num: '1', team: 'Swampjaw Maulers', jersey: '#1e6fb8', trim: '#ff7a00', skin: '#3aa76d', eye: '#a3e635', trait: 'fast', traitDesc: 'Tail-whip speed bursts — the fastest rusher in the league.', unlock: 35, speed: 1.25, agility: 1.15, meterGain: 1.0, beastTime: 5, small: true },
+    { id: 'tad', name: 'TAD POLETTI', num: '7', team: 'Swampjaw Maulers', jersey: '#1e6fb8', trim: '#ff7a00', skin: '#58c24a', eye: '#00e5ff', trait: 'tongue', traitDesc: 'Sticky tongue, long-bomb QB — quick hops, snappy turns.', unlock: 40, speed: 1.05, agility: 1.3, meterGain: 1.0, beastTime: 5, small: true },
+    { id: 'havoc', name: 'HAVOC', num: '11', team: 'Swampjaw Maulers', jersey: '#1e6fb8', trim: '#ff7a00', skin: '#7a9cc0', eye: '#ff7a00', trait: 'flight', traitDesc: 'Short flight, dive-from-the-sky catches — high and fast.', unlock: 45, speed: 1.15, agility: 1.2, meterGain: 1.0, beastTime: 5 },
+    { id: 'marv', name: 'MUDSLIDE MARV', num: '77', team: 'Swampjaw Maulers', jersey: '#1e6fb8', trim: '#ff7a00', skin: '#8a7a5c', eye: '#ff00aa', trait: 'tough', traitDesc: 'Living wrecking ball — armor absorbs one hit, refreshed every touchdown.', unlock: 50, speed: 0.95, agility: 0.95, meterGain: 1.0, beastTime: 5 },
+    { id: 'gumbo', name: 'GUMBO JACK', num: '23', team: 'Swampjaw Maulers', jersey: '#1e6fb8', trim: '#ff7a00', skin: '#5a5a5a', eye: '#39ff6a', trait: 'nuclear', traitDesc: 'Nuclear-charged leg — the Beast Meter fills faster for the big kick.', unlock: 55, speed: 1.0, agility: 1.05, meterGain: 1.25, beastTime: 5 }
+  ];
+  var careerTD = 0;
+  try { careerTD = parseInt(localStorage.getItem('bb-career-td') || '0', 10) || 0; } catch (e) { careerTD = 0; }
+  var selectedMonster = 'chomp';
+  try { selectedMonster = localStorage.getItem('bb-monster') || 'chomp'; } catch (e) { selectedMonster = 'chomp'; }
+  function monsterById(id) {
+    for (var mi = 0; mi < MONSTERS.length; mi++) if (MONSTERS[mi].id === id) return MONSTERS[mi];
+    return MONSTERS[0];
+  }
+  // a stored pick is only valid if its unlock was earned (career TDs only grow)
+  if (careerTD < monsterById(selectedMonster).unlock) selectedMonster = 'chomp';
+  function selectedMon() { return monsterById(selectedMonster); }
+
+  // v2 run state (assigned in reset())
+  var weaponPickups, vehicles, vehicle, jumpTime, heldWeapon;
+  var weaponTimer, vehicleTimer, lifeOrbSpawned, lifeOrbAt, armor, lastExtraLifeTD;
+  var down = 1, downsUsed = 0, lastFirstDownYards = 0;
+  var patActive = false, patTime = 0, patNeedle = 50, patMade = 0;
+  var stamina = 100, exhausted = false, sprintKey = false, sparkTimer = 0;
+
+  // ---------- v2: weapons (field pickups, one held at a time) ----------
+  var WEAPONS = {
+    chomp: { name: 'GATOR CHOMP', color: '#2e8b57', icon: 'J' },
+    bark: { name: 'SONIC BARK', color: '#c8102e', icon: 'B' },
+    stomp: { name: 'SEISMIC STOMP', color: '#7fe3f0', icon: 'S' }
+  };
+  function spawnWeaponPickup() {
+    var keys = ['chomp', 'bark', 'stomp'];
+    var type = keys[Math.floor(Math.random() * keys.length)];
+    weaponPickups.push({ x: 40 + Math.random() * (W - 80), y: -20, r: 16, vy: 110, type: type });
+  }
+  function fireWeapon() {
+    if (state !== 'play' || !heldWeapon) return;
+    var type = heldWeapon; heldWeapon = null;
+    if (type === 'chomp') {
+      showBanner('GATOR CHOMP!');
+      for (var i = raiders.length - 1; i >= 0; i--) {
+        var r = raiders[i];
+        if (r.y < player.y && Math.hypot(r.x - player.x, r.y - player.y) < 170) {
+          score += 25; burst(r.x, r.y, '#2e8b57'); raiders.splice(i, 1);
+        }
+      }
+      beep(200, 0.2, 'sawtooth');
+    } else if (type === 'bark') {
+      showBanner('SONIC BARK!');
+      for (var j = 0; j < raiders.length; j++) raiders[j].stunned = 3;
+      beep(500, 0.3, 'square');
+    } else if (type === 'stomp') {
+      showBanner('SEISMIC STOMP!'); shake = 14;
+      for (var k = raiders.length - 1; k >= 0; k--) {
+        var r2 = raiders[k];
+        if (Math.abs(r2.y - player.y) < 170) {
+          score += 25; burst(r2.x, r2.y, '#7fe3f0'); raiders.splice(k, 1);
+        }
+      }
+      beep(90, 0.3, 'sawtooth');
+    }
+    updateHUD();
+  }
+
+  // ---------- v2: vehicles (timed rides, ~6 seconds) ----------
+  function spawnVehiclePickup() {
+    var types = ['bus', 'buggy', 'hoverbus', 'futurecar'];
+    var type = types[Math.floor(Math.random() * types.length)];
+    vehicles.push({ x: 40 + Math.random() * (W - 80), y: -24, r: 32, vy: 100, type: type });
+  }
+  function drawVehicleRide() {
+    if (!vehicle) return;
+    var bob = vehicle.type === 'hoverbus' ? Math.sin(performance.now() / 200) * 3 : 0;
+    ctx.save(); ctx.translate(player.x, player.y + 8 + bob);
+    if (vehicle.type === 'bus') {
+      ctx.fillStyle = '#1e6fb8'; roundRect(-46, -18, 92, 34, 8); ctx.fill();
+      ctx.fillStyle = '#ff7a00'; ctx.fillRect(-46, 12, 92, 4);
+      ctx.fillStyle = '#bfe3ff';
+      for (var i = 0; i < 4; i++) ctx.fillRect(-38 + i * 20, -10, 12, 12);
+      ctx.fillStyle = '#111';
+      ctx.beginPath(); ctx.arc(-28, 18, 8, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(28, 18, 8, 0, Math.PI * 2); ctx.fill();
+    } else if (vehicle.type === 'hoverbus') {
+      // NEON HOVER BUS: floats on a neon glow cushion, electric sparks, invulnerable, slower turning
+      ctx.fillStyle = 'rgba(34,211,238,0.35)';
+      ctx.beginPath(); ctx.ellipse(0, 26, 54, 9, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowColor = '#22d3ee'; ctx.shadowBlur = 22;
+      ctx.fillStyle = '#0b2a3a'; roundRect(-52, -20, 104, 36, 10); ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = '#22d3ee'; ctx.lineWidth = 3;
+      roundRect(-52, -20, 104, 36, 10); ctx.stroke();
+      ctx.fillStyle = '#ff00aa'; ctx.fillRect(-52, 12, 104, 4);
+      ctx.fillStyle = '#bfefff';
+      for (var hi = 0; hi < 4; hi++) ctx.fillRect(-42 + hi * 22, -12, 13, 12);
+      ctx.fillStyle = '#22d3ee';
+      ctx.beginPath(); ctx.arc(-34, 22, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(34, 22, 5, 0, Math.PI * 2); ctx.fill();
+    } else if (vehicle.type === 'futurecar') {
+      // FUTURISTIC CAR: fast neon coupe, quicker turning, shorter ride (4s)
+      ctx.shadowColor = '#ff00aa'; ctx.shadowBlur = 20;
+      ctx.fillStyle = '#1a0b2a'; roundRect(-46, -14, 92, 28, 12); ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = '#ff00aa'; ctx.lineWidth = 3;
+      roundRect(-46, -14, 92, 28, 12); ctx.stroke();
+      ctx.fillStyle = '#22d3ee'; ctx.fillRect(-46, -14, 92, 5);
+      ctx.fillStyle = '#bfefff'; ctx.fillRect(-18, -8, 30, 10);
+      ctx.fillStyle = '#ff00aa'; ctx.fillRect(38, -18, 16, 5);
+      ctx.fillStyle = '#111';
+      ctx.beginPath(); ctx.arc(-26, 16, 10, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(26, 16, 10, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#22d3ee'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(-26, 16, 10, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(26, 16, 10, 0, Math.PI * 2); ctx.stroke();
+    } else {
+      ctx.fillStyle = '#3a2a12'; roundRect(-38, -12, 76, 26, 8); ctx.fill();
+      ctx.fillStyle = '#d4a017'; ctx.fillRect(-38, -12, 76, 6);
+      ctx.fillStyle = '#111';
+      ctx.beginPath(); ctx.arc(-22, 16, 9, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(22, 16, 9, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
+  }
+  function drawVehiclePickup(v) {
+    var label = v.type === 'bus' ? 'BUS' : v.type === 'hoverbus' ? 'HOVER' : v.type === 'futurecar' ? 'NEON CAR' : 'BUGGY';
+    var bg = v.type === 'bus' ? '#1e6fb8' : v.type === 'hoverbus' ? '#22d3ee' : v.type === 'futurecar' ? '#ff00aa' : '#d4a017';
+    var fg = v.type === 'hoverbus' ? '#04222a' : '#fff';
+    var hw = label.length > 5 ? 32 : 26;
+    ctx.save(); ctx.translate(v.x, v.y);
+    ctx.shadowColor = bg; ctx.shadowBlur = 16;
+    ctx.fillStyle = bg;
+    roundRect(-hw, -14, hw * 2, 28, 8); ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = fg; ctx.font = 'bold ' + (label.length > 5 ? '11px' : '13px') + ' Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(label, 0, 1);
+    ctx.restore();
+  }
+  function drawWeaponPickup(wp) {
+    var w = WEAPONS[wp.type];
+    ctx.save(); ctx.translate(wp.x, wp.y);
+    ctx.shadowColor = w.color; ctx.shadowBlur = 16;
+    ctx.fillStyle = w.color;
+    ctx.beginPath(); ctx.arc(0, 0, wp.r, 0, Math.PI * 2); ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 15px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(w.icon, 0, 1);
+    ctx.restore();
+  }
+
+  // ---------- v3 art pass: neon sparks around every jersey ----------
+  function drawSparks(cx, cy, r, color, t) {
+    ctx.save();
+    ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.shadowColor = color; ctx.shadowBlur = 10;
+    for (var si = 0; si < 4; si++) {
+      var a = (t || 0) * 3 + si * (Math.PI / 2);
+      var sx = cx + Math.cos(a) * r, sy = cy + Math.sin(a) * r;
+      ctx.beginPath(); ctx.moveTo(sx - 4, sy); ctx.lineTo(sx + 4, sy); ctx.moveTo(sx, sy - 4); ctx.lineTo(sx, sy + 4); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function drawGlowEyes(x1, x2, y, r, color) {
+    ctx.save();
+    ctx.shadowColor = color; ctx.shadowBlur = 14; ctx.fillStyle = color;
+    ctx.beginPath(); ctx.arc(x1, y, r, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x2, y, r, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  // ---------- v2: monster drawing (jersey + number always on) ----------
+  function drawMonster(p, m, t) {
+    if (m.id === 'chomp') { drawChomp(p, t); return; }
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    if (m.small) ctx.scale(0.88, 0.88);
+    if (beastTime > 0) { ctx.shadowColor = '#39ff6a'; ctx.shadowBlur = 26; }
+    if (m.id === 'tusk') {
+      ctx.fillStyle = '#eafcff';
+      ctx.beginPath(); ctx.moveTo(-28, -6); ctx.quadraticCurveTo(-42, 16, -28, 34); ctx.lineTo(-21, 30); ctx.quadraticCurveTo(-33, 14, -21, -2); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(28, -6); ctx.quadraticCurveTo(42, 16, 28, 34); ctx.lineTo(21, 30); ctx.quadraticCurveTo(33, 14, 21, -2); ctx.closePath(); ctx.fill();
+    } else if (m.id === 'stinger') {
+      ctx.strokeStyle = '#ffb000'; ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.moveTo(0, -24); ctx.quadraticCurveTo(30, -50, 34, -24); ctx.stroke();
+      ctx.fillStyle = '#ffb000';
+      ctx.beginPath(); ctx.moveTo(34, -24); ctx.lineTo(25, -30); ctx.lineTo(43, -32); ctx.closePath(); ctx.fill();
+    } else if (m.id === 'talon') {
+      ctx.fillStyle = m.skin;
+      ctx.beginPath(); ctx.moveTo(-26, -18); ctx.lineTo(-46, -2); ctx.lineTo(-26, 8); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(26, -18); ctx.lineTo(46, -2); ctx.lineTo(26, 8); ctx.closePath(); ctx.fill();
+    } else if (m.id === 'coil') {
+      ctx.fillStyle = m.trim;
+      ctx.beginPath(); ctx.moveTo(-21, -20); ctx.quadraticCurveTo(-34, -44, -14, -46); ctx.quadraticCurveTo(0, -52, 14, -46); ctx.quadraticCurveTo(34, -44, 21, -20); ctx.closePath(); ctx.fill();
+    }
+    ctx.shadowBlur = 0;
+    // BIGGER, STRONGER build: broad shoulders, wide jersey, neon trim
+    ctx.fillStyle = m.jersey;
+    roundRect(-28, -28, 56, 58, 14); ctx.fill();
+    ctx.strokeStyle = m.trim; ctx.lineWidth = 3; ctx.shadowColor = m.trim; ctx.shadowBlur = 12;
+    roundRect(-28, -28, 56, 58, 14); ctx.stroke();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = m.trim;
+    roundRect(-32, -28, 64, 14, 7); ctx.fill();
+    ctx.fillStyle = '#111';
+    ctx.beginPath(); ctx.arc(0, -12, 18, Math.PI, 0); ctx.fill();
+    if (m.id === 'tusk') {
+      ctx.fillStyle = '#bfefff'; ctx.fillRect(-3, -32, 6, 16);
+    } else if (m.id === 'vex') {
+      ctx.fillStyle = '#c8102e';
+      ctx.beginPath(); ctx.moveTo(-14, -28); ctx.lineTo(-9, -37); ctx.lineTo(-5, -28); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(5, -28); ctx.lineTo(9, -37); ctx.lineTo(14, -28); ctx.closePath(); ctx.fill();
+    } else if (m.id === 'prism') {
+      ctx.fillStyle = '#fff'; ctx.fillRect(-12, -30, 24, 4);
+    }
+    if (m.id === 'prism') {
+      // shifting spectrum eyes: hue cycles with time
+      var hue = (((t || 0) * 180) % 360 + 360) % 360;
+      drawGlowEyes(-10, -10, -14, 4.5, 'hsl(' + hue + ',100%,60%)');
+      drawGlowEyes(10, 10, -14, 4.5, 'hsl(' + ((hue + 120) % 360) + ',100%,60%)');
+    } else {
+      drawGlowEyes(-10, 10, -14, 4.5, m.eye);
+    }
+    ctx.fillStyle = m.numColor || '#fff';
+    ctx.font = 'bold 26px Arial';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(m.num, 0, 8);
+    if (beastTime > 0) {
+      ctx.strokeStyle = '#39ff6a'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(-28, -8); ctx.lineTo(28, -8); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-28, 14); ctx.lineTo(28, 14); ctx.stroke();
+    }
+    drawSparks(0, 0, 40, m.trim, t);
+    ctx.restore();
+  }
+
+  // ---------- v2: monster select UI ----------
+  function renderMonSelect() {
+    var wrap = document.getElementById('monSelect');
+    var trait = document.getElementById('monTrait');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    for (var i = 0; i < MONSTERS.length; i++) {
+      (function (m) {
+        var b = document.createElement('button');
+        b.className = 'mon-btn' + (m.id === selectedMonster ? ' sel' : '');
+        b.type = 'button';
+        var locked = careerTD < m.unlock;
+        b.textContent = locked ? m.name + ' #' + m.num + ' (LOCKED: ' + m.unlock + ' TDs)' : m.name + ' #' + m.num;
+        b.disabled = locked;
+        b.addEventListener('click', function () {
+          selectedMonster = m.id;
+          try { localStorage.setItem('bb-monster', m.id); } catch (e) { /* ignore */ }
+          renderMonSelect();
+        });
+        wrap.appendChild(b);
+      })(MONSTERS[i]);
+    }
+    var cur = selectedMon();
+    trait.textContent = cur.name + ' — ' + cur.traitDesc + ' | Career TDs: ' + careerTD + ' (unlocks by touchdowns, or instantly with the Teammate Pack on Google Play)';
+  }
+
+  function reset() {
+    var mon = selectedMon();
+    player = { x: W / 2, y: H - 130, r: mon.small ? 27 : 30, speed: 320 * mon.speed };
+    raiders = []; orbs = []; particles = [];
+    weaponPickups = []; vehicles = [];
+    yards = 0; score = 0; touchdowns = 0; lives = 3;
+    meter = 0; beastTime = 0; invuln = 0;
+    fieldOffset = 0; raiderTimer = 0.7; orbTimer = 1.0; bannerTimer = 0;
+    weaponTimer = 20 + Math.random() * 10;
+    vehicleTimer = 42 + Math.random() * 20;
+    heldWeapon = null; vehicle = null; jumpTime = 0;
+    lifeOrbSpawned = false; lifeOrbAt = 150 + Math.random() * 250;
+    armor = (mon.trait === 'tough');
+    lastExtraLifeTD = 0;
+    down = 1; downsUsed = 0; lastFirstDownYards = 0;
+    patActive = false; patTime = 0; patNeedle = 50; patMade = 0;
+    stamina = 100; exhausted = false; sprintKey = false; sparkTimer = 0;
+    patBtn.style.display = 'none';
+    shake = 0;
+    updateHUD();
+  }
+
+  function updateHUD() {
+    hudYards.textContent = Math.floor(yards);
+    hudTD.textContent = touchdowns;
+    hudScore.textContent = score;
+    hudLives.textContent = '⛑'.repeat(Math.max(0, Math.min(5, lives))) + '○'.repeat(Math.max(0, 5 - lives));
+    var toGo = Math.max(1, Math.min(10, Math.ceil(10 - (yards - lastFirstDownYards))));
+    var ord = down === 1 ? '1ST' : down === 2 ? '2ND' : down === 3 ? '3RD' : '4TH';
+    hudDown.textContent = ord + ' & ' + toGo;
+    stamFill.style.width = Math.max(0, Math.min(100, stamina)) + '%';
+    weaponBtn.style.display = (state === 'play' && heldWeapon) ? 'block' : 'none';
+    weaponBtn.disabled = !heldWeapon;
+    if (heldWeapon) weaponBtn.textContent = WEAPONS[heldWeapon].name;
+    jumpBtn.style.display = (state === 'play' && vehicle && vehicle.type === 'buggy') ? 'block' : 'none';
+    meterFill.style.width = Math.min(100, meter) + '%';
+    beastBtn.disabled = !(meter >= 100 && beastTime <= 0 && state === 'play');
+    beastBtn.classList.toggle('beast-on', beastTime > 0);
+  }
+
+  function showBanner(text, top) {
+    banner.textContent = text;
+    banner.style.top = top || '38%'; // TD banner sits above the PAT kick panel instead of on top of it
+    banner.style.display = 'block';
+    bannerTimer = 1.5;
+  }
+
+  function startGame() {
+    ensureAudio();
+    reset();
+    state = 'play';
+    startScreen.classList.add('hidden');
+    overScreen.classList.add('hidden');
+    lastTime = performance.now();
+    requestAnimationFrame(loop);
+  }
+
+  function endGame() {
+    state = 'over';
+    if (score > best) {
+      best = score;
+      try { localStorage.setItem('bb-crash-course-high', String(best)); } catch (e) { /* ignore */ }
+    }
+    careerTD += touchdowns;
+    try { localStorage.setItem('bb-career-td', String(careerTD)); } catch (e) { /* ignore */ }
+    renderMonSelect();
+    document.getElementById('finalScore').textContent = score;
+    document.getElementById('finalYards').textContent = Math.floor(yards);
+    document.getElementById('finalTD').textContent = touchdowns;
+    document.getElementById('finalBest').textContent = best;
+    patActive = false; patBtn.style.display = 'none';
+    document.getElementById('finalPAT').textContent = patMade;
+    overScreen.classList.remove('hidden');
+    beep(160, 0.5, 'sawtooth');
+  }
+
+  function triggerBeast() {
+    if (state !== 'play' || meter < 100 || beastTime > 0) return;
+    ensureAudio();
+    meter = 0; beastTime = selectedMon().beastTime || 5;
+    showBanner('BEAST MODE!');
+    beep(880, 0.3, 'square'); setTimeout(function () { beep(1320, 0.3, 'square'); }, 120);
+    updateHUD();
+  }
+
+  // ---------- v3: PAT kick bonus + downs tackle counting ----------
+  function kickPAT() {
+    if (!patActive) return;
+    patActive = false;
+    patBtn.style.display = 'none';
+    if (patNeedle >= 40 && patNeedle <= 60) {
+      patMade++; score += 100;
+      showBanner('PAT GOOD! +1');
+      beep(1100, 0.2, 'sine'); setTimeout(function () { beep(1320, 0.3, 'sine'); }, 150);
+    } else {
+      showBanner('PAT NO GOOD — drive still counts');
+      beep(220, 0.3, 'sawtooth');
+    }
+    updateHUD();
+  }
+  function registerTackle() {
+    // every tackle uses a down; stopped on 4th down = turnover, drive restarts from this spot
+    downsUsed++;
+    down = Math.min(4, downsUsed + 1);
+    if (downsUsed >= 4) {
+      downsUsed = 0; down = 1; lastFirstDownYards = yards;
+      invuln = Math.max(invuln, 1.5);
+      showBanner('TURNOVER ON DOWNS!');
+      beep(180, 0.3, 'sawtooth');
+    }
+  }
+  function drawPAT() {
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.72)';
+    ctx.fillRect(30, H / 2 - 110, W - 60, 150);
+    ctx.strokeStyle = '#ffd23f'; ctx.lineWidth = 3;
+    ctx.strokeRect(30, H / 2 - 110, W - 60, 150);
+    ctx.fillStyle = '#ffd23f'; ctx.font = 'bold 22px Arial'; ctx.textAlign = 'center';
+    ctx.fillText('PAT KICK!', W / 2, H / 2 - 78);
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 13px Arial';
+    ctx.fillText('Tap KICK PAT when the needle is in the green!', W / 2, H / 2 - 54);
+    // meter: green centre zone is the make (40-60)
+    ctx.fillStyle = '#222'; ctx.fillRect(50, H / 2 - 30, W - 100, 22);
+    ctx.fillStyle = '#39ff6a'; ctx.fillRect(50 + (W - 100) * 0.4, H / 2 - 30, (W - 100) * 0.2, 22);
+    ctx.fillStyle = '#fff';
+    var nx = 50 + (W - 100) * (patNeedle / 100);
+    ctx.fillRect(nx - 2, H / 2 - 36, 4, 34);
+    ctx.restore();
+  }
+
+  function spawnRaider() {
+    var laneX = 40 + Math.random() * (W - 80);
+    var speed = 150 + Math.min(160, yards * 0.6) + Math.random() * 60;
+    raiders.push({
+      x: laneX, y: -40, r: 30,
+      vy: speed, vx: (Math.random() - 0.5) * 40,
+      num: 10 + Math.floor(Math.random() * 89)
+    });
+  }
+
+  function spawnOrb() {
+    orbs.push({ x: 40 + Math.random() * (W - 80), y: -20, r: 13, vy: 120 });
+  }
+
+  function burst(x, y, color) {
+    for (var i = 0; i < 12; i++) {
+      particles.push({
+        x: x, y: y,
+        vx: (Math.random() - 0.5) * 260, vy: (Math.random() - 0.5) * 260,
+        life: 0.5, color: color
+      });
+    }
+  }
+
+  // ---------- Drawing: all characters drawn in code, team colors, numbers on ----------
+  function drawChomp(p, t) {
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    if (beastTime > 0) { ctx.shadowColor = '#39ff6a'; ctx.shadowBlur = 26; }
+    // gator tail
+    ctx.fillStyle = '#155a8a';
+    ctx.beginPath(); ctx.moveTo(-10, 16); ctx.lineTo(-30, 34); ctx.lineTo(2, 26); ctx.closePath(); ctx.fill();
+    ctx.shadowBlur = 0;
+    // BIGGER, STRONGER body: Maulers blue jersey, broad orange shoulders, neon trim
+    ctx.fillStyle = '#1e6fb8';
+    roundRect(-28, -28, 56, 58, 14); ctx.fill();
+    ctx.strokeStyle = '#ff7a00'; ctx.lineWidth = 3; ctx.shadowColor = '#ff7a00'; ctx.shadowBlur = 12;
+    roundRect(-28, -28, 56, 58, 14); ctx.stroke();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#ff7a00';
+    roundRect(-32, -28, 64, 14, 7); ctx.fill();
+    // snout
+    ctx.fillStyle = '#2e8b57';
+    roundRect(-17, -40, 34, 18, 7); ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.moveTo(-12, -22); ctx.lineTo(-7, -28); ctx.lineTo(-2, -22); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(2, -22); ctx.lineTo(7, -28); ctx.lineTo(12, -22); ctx.closePath(); ctx.fill();
+    // helmet with orange jaw crest
+    ctx.fillStyle = '#111';
+    ctx.beginPath(); ctx.arc(0, -12, 18, Math.PI, 0); ctx.fill();
+    ctx.fillStyle = '#ff7a00';
+    ctx.fillRect(-3, -32, 6, 16);
+    // glowing gold eyes (bible: gold eyes that flare green on Surge)
+    drawGlowEyes(-10, 10, -14, 4.5, '#ffd23f');
+    // jersey number 77
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 26px Arial';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('77', 0, 8);
+    // beast-mode plating
+    if (beastTime > 0) {
+      ctx.strokeStyle = '#39ff6a'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(-28, -8); ctx.lineTo(28, -8); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-28, 14); ctx.lineTo(28, 14); ctx.stroke();
+    }
+    drawSparks(0, 0, 40, '#ff7a00', t);
+    ctx.restore();
+  }
+
+  function drawRaider(r, t) {
+    ctx.save();
+    ctx.translate(r.x, r.y);
+    // BIGGER bulldog body: black jersey, neon red trim, broad shoulders
+    ctx.fillStyle = '#111';
+    roundRect(-28, -28, 56, 58, 14); ctx.fill();
+    ctx.strokeStyle = '#c8102e'; ctx.lineWidth = 3; ctx.shadowColor = '#c8102e'; ctx.shadowBlur = 12;
+    roundRect(-28, -28, 56, 58, 14); ctx.stroke();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#c8102e';
+    roundRect(-32, -28, 64, 12, 6); ctx.fill();
+    // spiked helmet
+    ctx.fillStyle = '#000';
+    ctx.beginPath(); ctx.arc(0, -12, 18, Math.PI, 0); ctx.fill();
+    ctx.fillStyle = '#c8102e';
+    ctx.beginPath(); ctx.moveTo(-14, -28); ctx.lineTo(-9, -37); ctx.lineTo(-5, -28); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(5, -28); ctx.lineTo(9, -37); ctx.lineTo(14, -28); ctx.closePath(); ctx.fill();
+    // glowing red eyes
+    drawGlowEyes(-10, 10, -14, 4.5, '#ff2222');
+    if (r.stunned > 0) {
+      ctx.strokeStyle = '#ffd23f'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(0, 0, 34, 0, Math.PI * 2); ctx.stroke();
+    }
+    // jersey number
+    ctx.fillStyle = '#ff5566';
+    ctx.font = 'bold 24px Arial';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(String(r.num), 0, 10);
+    drawSparks(0, 0, 40, '#c8102e', t);
+    ctx.restore();
+  }
+
+  function drawOrb(o, t) {
+    var pulse = 1 + Math.sin(t * 6) * 0.15;
+    ctx.save();
+    ctx.translate(o.x, o.y);
+    var glow = o.life ? '#ffd23f' : '#39ff6a';
+    var core = o.life ? '#fff7cc' : '#eaffea';
+    ctx.shadowColor = glow; ctx.shadowBlur = 18;
+    ctx.fillStyle = glow;
+    ctx.beginPath(); ctx.arc(0, 0, o.r * pulse, 0, Math.PI * 2); ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = core;
+    ctx.beginPath(); ctx.arc(0, 0, o.r * 0.45, 0, Math.PI * 2); ctx.fill();
+    if (o.life) {
+      ctx.fillStyle = '#7a5a00';
+      ctx.font = 'bold 13px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('+1', 0, 1);
+    }
+    ctx.restore();
+  }
+
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  function drawField(t) {
+    // grass stripes
+    for (var i = 0; i < 7; i++) {
+      ctx.fillStyle = i % 2 === 0 ? '#1e7a34' : '#2a9440';
+      ctx.fillRect(0, i * 100, W, 100);
+    }
+    // scrolling yard lines
+    var offset = fieldOffset % 70;
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 3;
+    for (var y = -70 + offset; y < H + 70; y += 70) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+    // sidelines
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, 6, H); ctx.fillRect(W - 6, 0, 6, H);
+    // yard markers
+    ctx.fillStyle = 'rgba(255,255,255,0.75)';
+    ctx.font = 'bold 15px Arial'; ctx.textAlign = 'left';
+    var mark = (Math.floor(yards / 10) * 10) % 100;
+    ctx.fillText(mark + ' YD', 14, 90);
+    // v3: first-down marker line + goal line (24 px per yard from the player)
+    if (typeof lastFirstDownYards === 'number' && player) {
+      var fdDist = (lastFirstDownYards + 10) - yards;
+      var fdY = player.y - fdDist * 24;
+      if (fdY > -20 && fdY < H + 20) {
+        ctx.strokeStyle = '#ffd23f'; ctx.lineWidth = 3; ctx.setLineDash([12, 8]);
+        ctx.beginPath(); ctx.moveTo(6, fdY); ctx.lineTo(W - 6, fdY); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#ffd23f'; ctx.font = 'bold 13px Arial'; ctx.textAlign = 'right';
+        ctx.fillText('FIRST DOWN', W - 12, fdY - 6);
+      }
+      var goalDist = (touchdowns + 1) * 100 - yards;
+      var goalY = player.y - goalDist * 24;
+      if (goalY > -20 && goalY < H + 20) {
+        ctx.strokeStyle = '#ff7a00'; ctx.lineWidth = 5;
+        ctx.beginPath(); ctx.moveTo(6, goalY); ctx.lineTo(W - 6, goalY); ctx.stroke();
+        ctx.fillStyle = '#ff7a00'; ctx.font = 'bold 13px Arial'; ctx.textAlign = 'right';
+        ctx.fillText('END ZONE', W - 12, goalY - 7);
+      }
+    }
+  }
+
+  // ---------- Main loop ----------
+  function loop(now) {
+    if (state !== 'play') return;
+    var dt = Math.min(0.05, (now - lastTime) / 1000);
+    lastTime = now;
+    var t = now / 1000;
+    // v3 PAT: play pauses on the kick meter until the player taps KICK PAT
+    if (patActive) {
+      patTime += dt;
+      patNeedle = 50 + 48 * Math.sin(patTime * 4);
+      draw(t);
+      requestAnimationFrame(loop);
+      return;
+    }
+
+    // movement: keys or touch drag (vehicle speed + monster agility apply)
+    var monMove = selectedMon();
+    var effSpeed = player.speed;
+    if (vehicle && vehicle.type === 'bus') effSpeed *= 0.7;
+    if (vehicle && vehicle.type === 'buggy') effSpeed *= 1.3;
+    if (vehicle && vehicle.type === 'hoverbus') effSpeed *= 0.85;
+    if (vehicle && vehicle.type === 'futurecar') effSpeed *= 1.4;
+    if (exhausted) effSpeed *= 0.5;
+    if (touchX !== null) {
+      var dx = touchX - player.x;
+      var step = effSpeed * monMove.agility * dt;
+      player.x += Math.max(-step, Math.min(step, dx));
+    } else {
+      if (moveLeft) player.x -= effSpeed * dt;
+      if (moveRight) player.x += effSpeed * dt;
+    }
+    player.x = Math.max(32, Math.min(W - 32, player.x));
+
+    // speed + yardage (faster in beast mode)
+    var sprinting = sprintKey || (touchX !== null && Math.abs(touchX - player.x) > 90);
+    var dodging = moveLeft || moveRight || (touchX !== null && Math.abs(touchX - player.x) > 8);
+    var speed = 190 + Math.min(180, yards * 0.5);
+    if (beastTime > 0) { speed *= 1.5; beastTime -= dt; if (beastTime <= 0) beastTime = 0; }
+    if (sprinting && !exhausted) speed *= 1.25;
+    if (exhausted) speed *= 0.65;
+    yards += (speed * dt) / 10;
+    score += Math.floor((speed * dt) / 10);
+    fieldOffset += speed * dt;
+    // v3 stamina (MDickie-style): sprinting/dodging drains, easing off (or riding) refills
+    if (vehicle) { stamina = Math.min(100, stamina + 18 * dt); }
+    else if (sprinting) { stamina -= 28 * dt; }
+    else if (dodging) { stamina -= 16 * dt; }
+    else { stamina = Math.min(100, stamina + 18 * dt); }
+    if (beastTime > 0) stamina -= 8 * dt;
+    if (stamina <= 0) { stamina = 0; exhausted = true; }
+    if (exhausted && stamina >= 25) exhausted = false;
+    if (invuln > 0) invuln -= dt;
+    if (vehicle) { vehicle.time -= dt; if (vehicle.time <= 0) vehicle = null; }
+    if (jumpTime > 0) jumpTime -= dt;
+    if (bannerTimer > 0) {
+      bannerTimer -= dt;
+      if (bannerTimer <= 0) banner.style.display = 'none';
+    }
+
+    // v3 downs: gain 10 yards for a fresh set of downs
+    while (yards >= lastFirstDownYards + 10) {
+      lastFirstDownYards += 10;
+      downsUsed = 0; down = 1;
+      score += 25;
+      showBanner('FIRST DOWN!');
+      beep(880, 0.1, 'sine');
+    }
+    // touchdown every 100 yards, then a PAT kick bonus
+    if (yards >= (touchdowns + 1) * 100) {
+      touchdowns++;
+      score += 500;
+      if (selectedMon().trait === 'tough') armor = true;
+      var extraLife = '';
+      if (touchdowns % 2 === 0 && touchdowns > lastExtraLifeTD) {
+        lastExtraLifeTD = touchdowns;
+        if (lives < 5) { lives++; extraLife = ' +1 LIFE'; }
+      }
+      downsUsed = 0; down = 1; lastFirstDownYards = touchdowns * 100;
+      showBanner('TOUCHDOWN!' + extraLife, '14%');
+      beep(660, 0.15, 'square');
+      setTimeout(function () { beep(880, 0.15, 'square'); }, 130);
+      setTimeout(function () { beep(1100, 0.3, 'square'); }, 260);
+      patActive = true; patTime = 0; patNeedle = 50;
+      patBtn.style.display = 'block';
+    }
+
+    // spawns
+    raiderTimer -= dt;
+    if (raiderTimer <= 0) { spawnRaider(); raiderTimer = Math.max(0.45, 0.95 - yards * 0.001); }
+    orbTimer -= dt;
+    if (orbTimer <= 0) { spawnOrb(); orbTimer = 1.4 + Math.random() * 0.8; }
+    weaponTimer -= dt;
+    if (weaponTimer <= 0) {
+      if (!heldWeapon && weaponPickups.length === 0) spawnWeaponPickup();
+      weaponTimer = 18 + Math.random() * 14;
+    }
+    vehicleTimer -= dt;
+    if (vehicleTimer <= 0) {
+      if (!vehicle && vehicles.length === 0) spawnVehiclePickup();
+      vehicleTimer = 42 + Math.random() * 26;
+    }
+    if (!lifeOrbSpawned && yards >= lifeOrbAt) {
+      lifeOrbSpawned = true;
+      orbs.push({ x: 40 + Math.random() * (W - 80), y: -20, r: 15, vy: 120, life: true });
+    }
+
+    // raiders
+    for (var i = raiders.length - 1; i >= 0; i--) {
+      var r = raiders[i];
+      if (r.stunned > 0) { r.stunned -= dt; }
+      else { r.y += r.vy * dt; r.x += r.vx * dt; }
+      if (r.x < 30 || r.x > W - 30) r.vx *= -1;
+      if (r.y > H + 50 || r.y < -60) { raiders.splice(i, 1); continue; }
+      var d = Math.hypot(r.x - player.x, r.y - player.y);
+      if (d < r.r + player.r - 6) {
+        if (vehicle && vehicle.type !== 'buggy') {
+          score += 25; burst(r.x, r.y, '#ffd23f');
+          beep(300, 0.12, 'sawtooth');
+          raiders.splice(i, 1);
+        } else if (jumpTime > 0) {
+          // buggy jump: Raider bounces off comically, no damage
+          score += 10; burst(r.x, r.y, '#ffd23f');
+          r.vy = -220; r.vx = (Math.random() - 0.5) * 240;
+          beep(600, 0.1, 'sine');
+        } else if (beastTime > 0) {
+          score += 25; burst(r.x, r.y, '#39ff6a');
+          beep(300, 0.12, 'sawtooth');
+          raiders.splice(i, 1);
+        } else if (r.stunned > 0) {
+          score += 10; burst(r.x, r.y, '#ffd23f');
+          beep(700, 0.1, 'sine');
+          raiders.splice(i, 1);
+        } else if (invuln <= 0) {
+          if (armor) {
+            armor = false; invuln = 1.0; shake = 8;
+            burst(player.x, player.y, '#7fe3f0');
+            beep(240, 0.2, 'square');
+            raiders.splice(i, 1);
+            registerTackle();
+          } else {
+            lives--; invuln = 1.5; shake = 10;
+            burst(player.x, player.y, '#ff5340');
+            beep(120, 0.3, 'sawtooth');
+            raiders.splice(i, 1);
+            if (lives <= 0) { updateHUD(); draw(t); endGame(); return; }
+            registerTackle();
+          }
+        }
+      }
+    }
+
+    // orbs
+    for (var j = orbs.length - 1; j >= 0; j--) {
+      var o = orbs[j];
+      o.y += o.vy * dt;
+      if (o.y > H + 30) { orbs.splice(j, 1); continue; }
+      var od = Math.hypot(o.x - player.x, o.y - player.y);
+      if (od < o.r + player.r) {
+        if (o.life) {
+          if (lives < 5) lives++;
+          score += 50; burst(o.x, o.y, '#ffd23f');
+          showBanner('EXTRA LIFE!');
+          beep(1320, 0.15, 'sine');
+        } else {
+          meter = Math.min(100, meter + 20 * selectedMon().meterGain);
+          score += 10; burst(o.x, o.y, '#39ff6a');
+          beep(990, 0.1, 'sine');
+        }
+        orbs.splice(j, 1);
+      }
+    }
+
+    // v3: hover bus / neon car throw electric sparks while riding
+    if (vehicle && (vehicle.type === 'hoverbus' || vehicle.type === 'futurecar')) {
+      sparkTimer -= dt;
+      if (sparkTimer <= 0) {
+        sparkTimer = 0.09;
+        particles.push({ x: player.x + (Math.random() - 0.5) * 60, y: player.y + 20, vx: (Math.random() - 0.5) * 120, vy: 60 + Math.random() * 80, life: 0.4, color: Math.random() < 0.5 ? '#22d3ee' : '#ff00aa' });
+      }
+    }
+
+    // weapon pickups
+    for (var wi = weaponPickups.length - 1; wi >= 0; wi--) {
+      var wp = weaponPickups[wi];
+      wp.y += wp.vy * dt;
+      if (wp.y > H + 30) { weaponPickups.splice(wi, 1); continue; }
+      if (Math.hypot(wp.x - player.x, wp.y - player.y) < wp.r + player.r) {
+        heldWeapon = wp.type;
+        showBanner(WEAPONS[wp.type].name + ' READY!');
+        beep(1200, 0.12, 'sine');
+        weaponPickups.splice(wi, 1);
+      }
+    }
+    // vehicle pickups
+    for (var vi = vehicles.length - 1; vi >= 0; vi--) {
+      var vp = vehicles[vi];
+      vp.y += vp.vy * dt;
+      if (vp.y > H + 40) { vehicles.splice(vi, 1); continue; }
+      if (Math.hypot(vp.x - player.x, vp.y - player.y) < vp.r + player.r) {
+        vehicle = { type: vp.type, time: vp.type === 'futurecar' ? 4 : 6 };
+        showBanner(vp.type === 'bus' ? 'BUS RIDE!' : vp.type === 'hoverbus' ? 'NEON HOVER BUS!' : vp.type === 'futurecar' ? 'NEON CAR!' : 'BUGGY!');
+        beep(440, 0.2, 'square');
+        vehicles.splice(vi, 1);
+      }
+    }
+
+    // particles
+    for (var k = particles.length - 1; k >= 0; k--) {
+      var p = particles[k];
+      p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt;
+      if (p.life <= 0) particles.splice(k, 1);
+    }
+
+    if (shake > 0) shake *= 0.85;
+    updateHUD();
+    draw(t);
+    requestAnimationFrame(loop);
+  }
+
+  function draw(t) {
+    ctx.save();
+    if (shake > 1) ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
+    drawField(t);
+    for (var i = 0; i < orbs.length; i++) drawOrb(orbs[i], t);
+    for (var wi2 = 0; wi2 < weaponPickups.length; wi2++) drawWeaponPickup(weaponPickups[wi2]);
+    for (var vi2 = 0; vi2 < vehicles.length; vi2++) drawVehiclePickup(vehicles[vi2]);
+    for (var j = 0; j < raiders.length; j++) drawRaider(raiders[j], t);
+    // blink while invulnerable
+    if (vehicle) drawVehicleRide();
+    if (invuln <= 0 || Math.floor(t * 10) % 2 === 0) drawMonster(player, selectedMon(), t);
+    for (var k = 0; k < particles.length; k++) {
+      var p = particles[k];
+      ctx.globalAlpha = Math.max(0, p.life * 2);
+      ctx.fillStyle = p.color;
+      ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
+    ctx.globalAlpha = 1;
+    if (patActive) drawPAT();
+  }
+
+  // ---------- Controls ----------
+  function canvasX(clientX) {
+    var rect = canvas.getBoundingClientRect();
+    return (clientX - rect.left) * (W / rect.width);
+  }
+  canvas.addEventListener('touchstart', function (e) {
+    ensureAudio();
+    if (e.touches.length > 0) touchX = canvasX(e.touches[0].clientX);
+    e.preventDefault();
+  }, { passive: false });
+  canvas.addEventListener('touchmove', function (e) {
+    if (e.touches.length > 0) touchX = canvasX(e.touches[0].clientX);
+    e.preventDefault();
+  }, { passive: false });
+  canvas.addEventListener('touchend', function () { touchX = null; });
+  canvas.addEventListener('mousedown', function (e) { ensureAudio(); touchX = canvasX(e.clientX); });
+  canvas.addEventListener('mousemove', function (e) { if (touchX !== null) touchX = canvasX(e.clientX); });
+  canvas.addEventListener('mouseup', function () { touchX = null; });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Shift') sprintKey = true;
+    if (e.key === 'ArrowLeft' || e.key === 'a') moveLeft = true;
+    if (e.key === 'ArrowRight' || e.key === 'd') moveRight = true;
+    if (e.key === 'x' || e.key === 'X') fireWeapon();
+    if ((e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') && vehicle && vehicle.type === 'buggy') jumpTime = 0.6;
+    if (e.key === ' ' || e.key === 'Enter') {
+      if (state === 'start') startGame();
+      else if (state === 'over') startGame();
+      else if (patActive) kickPAT();
+      else triggerBeast();
+      e.preventDefault();
+    }
+  });
+  document.addEventListener('keyup', function (e) {
+    if (e.key === 'Shift') sprintKey = false;
+    if (e.key === 'ArrowLeft' || e.key === 'a') moveLeft = false;
+    if (e.key === 'ArrowRight' || e.key === 'd') moveRight = false;
+  });
+
+  beastBtn.addEventListener('click', triggerBeast);
+  weaponBtn.addEventListener('click', fireWeapon);
+  jumpBtn.addEventListener('click', function () { if (vehicle && vehicle.type === 'buggy') jumpTime = 0.6; });
+  patBtn.addEventListener('click', kickPAT);
+  document.getElementById('kickoffBtn').addEventListener('click', startGame);
+  document.getElementById('againBtn').addEventListener('click', startGame);
+
+  // ---------- Upgrade shop (v1.1): FREE game + PAID upgrades ----------
+  // HONEST BILLING STATE: Google Play Billing is NOT connected yet — this is
+  // still a local file. No button below charges anything, collects payment
+  // info, or simulates a purchase. Each pack maps to a future Play product
+  // ID (see UPGRADES[].id) so Play Billing can hook up later without
+  // rewriting the shop. Buttons only show the honest "unlocks on Play" note.
+  var UPGRADES = [
+    { id: 'beasts_skin_pack', name: 'Maulers Skin Pack', price: '$0.99', desc: 'Alternate Maulers jerseys + field colors for Chomp.' },
+    { id: 'beasts_fx_pack', name: 'Beast FX Pack', price: '$0.99', desc: 'Extra Beast Mode glow trails and smash effects.' },
+    { id: 'beasts_teammates', name: 'Teammate Pack', price: '$1.99', desc: 'Extra beasts — unlocks every monster in Monster Select instantly on Google Play.' },
+    { id: 'beasts_vex_boss', name: 'Vex Boss Fight', price: '$2.99', desc: 'Bonecrusher Vex boss encounter at the end of a drive.' },
+    { id: 'beasts_skybound', name: 'Skybound League', price: '$2.99', desc: 'Basketball mode — the Phase 3 Skybound League.' },
+    { id: 'beasts_barnstorm', name: 'Barnstorm League', price: '$2.99', desc: 'Baseball mode — the Phase 3 Barnstorm League.' },
+    { id: 'beasts_season_pass', name: 'Season Pass', price: '$4.99', desc: 'All packs above — everything current + future v2 content.' }
+  ];
+  var shopScreen = document.getElementById('shopScreen');
+  var packList = document.getElementById('packList');
+  var shopNotice = document.getElementById('shopNotice');
+  var shopReturn = 'start'; // 'start' | 'over'
+
+  function renderShop() {
+    packList.innerHTML = '';
+    for (var i = 0; i < UPGRADES.length; i++) {
+      (function (pack) {
+        var card = document.createElement('div');
+        card.className = 'pack';
+        var title = document.createElement('h3');
+        title.textContent = pack.name;
+        var desc = document.createElement('p');
+        desc.textContent = pack.desc;
+        var row = document.createElement('div');
+        row.className = 'row';
+        var price = document.createElement('span');
+        price.className = 'price';
+        price.textContent = pack.price;
+        var btn = document.createElement('button');
+        btn.className = 'unlock-btn';
+        btn.type = 'button';
+        btn.textContent = 'UNLOCKS ON GOOGLE PLAY';
+        btn.addEventListener('click', function () {
+          // No checkout, no payment, no simulated purchase — honest notice only.
+          shopNotice.textContent = pack.name + ' (' + pack.price + ') unlocks when the game launches on Google Play. No payment is taken here.';
+        });
+        row.appendChild(price);
+        row.appendChild(btn);
+        card.appendChild(title);
+        card.appendChild(desc);
+        card.appendChild(row);
+        packList.appendChild(card);
+      })(UPGRADES[i]);
+    }
+  }
+  function openShop(from) {
+    shopReturn = from;
+    renderShop();
+    shopNotice.textContent = '';
+    startScreen.classList.add('hidden');
+    overScreen.classList.add('hidden');
+    shopScreen.classList.remove('hidden');
+  }
+  function closeShop() {
+    shopScreen.classList.add('hidden');
+    if (shopReturn === 'over') overScreen.classList.remove('hidden');
+    else startScreen.classList.remove('hidden');
+  }
+  document.getElementById('shopBtnStart').addEventListener('click', function () { openShop('start'); });
+  document.getElementById('shopBtnOver').addEventListener('click', function () { openShop('over'); });
+  document.getElementById('shopBackBtn').addEventListener('click', closeShop);
+
+  // idle attract screen behind the start overlay
+  renderMonSelect();
+  reset();
+  draw(0);
+})();
+</script>
+</body>
+</html>
