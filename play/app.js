@@ -73,7 +73,11 @@
     { id: 'north-park', file: 'games/north-park-city.html', img: 'assets/games/north-park.jpg', title: 'North Park: City Chaos',
       desc: 'Cruise the block in Family Edition: taco runs, go-kart chases and party missions.', free: 'Missions 1–2 free', pass: 'Missions 3–5 with Pass', exitBottom: true },
     { id: 'ridahz', file: 'ridahz-of-darkness.html', img: 'assets/games/ridahz-of-darkness.jpg', title: 'RIDAHZ OF DARKNESS: Road to the Light',
-      desc: 'Race NIGHTFALL across Umbraxis, brawl wraiths in the Onyx Howler armor and outsmart Vexa-3. Teen action, no gore.', free: 'Free to play', pass: null, exitBottom: true }
+      desc: 'Race NIGHTFALL across Umbraxis, brawl wraiths in the Onyx Howler armor and outsmart Vexa-3. Teen action, no gore.', free: 'Free to play', pass: null, exitBottom: true },
+    { id: 'glitch-kids-open-city', file: 'glitch-kids-open-city.html', img: 'assets/games/glitch-kids-open-city.jpg', title: 'GLITCH KIDS: Open City',
+      desc: 'Free-roam Dripwater City from above: hop in cars, help people with missions, poof Glitch monsters and beat 4 silly bosses. Ages 6-10.', free: 'Free to play', pass: null, exitBottom: true },
+    { id: 'ridahz-fighters', file: 'ridahz-fighters.html', img: 'assets/games/ridahz-fighters.jpg', title: 'RIDAHZ FIGHTERS: Clash of Umbraxis',
+      desc: '16-bit fighter: pick from 8 Ridahz and battle through Umbraxis to the Hollow King.', free: 'Free to play', pass: null, exitBottom: true }
   ];
   var SHOP = [];
   var SHOP_CATS = [
