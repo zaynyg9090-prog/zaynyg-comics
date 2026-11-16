@@ -79,7 +79,9 @@
     { id: 'ridahz-fighters', file: 'ridahz-fighters.html', img: 'assets/games/ridahz-fighters.jpg', title: 'RIDAHZ FIGHTERS: Clash of Umbraxis',
       desc: '16-bit fighter: pick from 8 Ridahz and battle through Umbraxis to the Hollow King.', free: 'Free to play', pass: null, exitBottom: true },
     { id: 'mmm-tinkerbrook', file: 'mmm-tinkerbrook.html', img: 'assets/games/mmm-tinkerbrook.jpg', title: 'MICRO METAMORPHOSIS MACHINES: Tinkerbrook Unfolded',
-      desc: 'Tiny scale. HUGE transformations. Free-roam Tinkerbrook from above, flip your machine between car, robot and playset, and bring color back to town. Ages 6-10.', free: 'Free to play', pass: null, exitBottom: true }
+      desc: 'Tiny scale. HUGE transformations. Free-roam Tinkerbrook from above, flip your machine between car, robot and playset, and bring color back to town. Ages 6-10.', free: 'Free to play', pass: null, exitBottom: true },
+    { id: 'zaynyg-world-64', file: 'zaynyg-world-64.html', img: 'assets/games/zaynyg-world-64.jpg', title: 'ZAYNYG WORLD 64: Crossover',
+      desc: 'A 3D adventure in classic 64-style: swap between Drayke, Zay, Nova and Auriel, explore 4 worlds, collect Zay Stars and stop the Null Crown. Ages 7+.', free: 'Free to play', pass: null, exitBottom: true }
   ];
   var SHOP = [];
   var SHOP_CATS = [
