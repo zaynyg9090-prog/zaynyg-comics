@@ -87,7 +87,9 @@
     { id: 'mmm-64', file: 'mmm-64.html', img: 'assets/games/mmm-64.jpg', title: 'MICRO METAMORPHOSIS MACHINES 64',
       desc: 'Tinkerbrook Unfolded in full 3D! Morph between vehicle, warrior and walk-in playset, team up all 6 Sparkfriends, win 9 missions, beat 3 bosses and bring color back to town. Ages 6-10.', free: 'Free to play', pass: null, exitBottom: true },
     { id: 'glitch-kids-64', file: 'glitch-kids-64.html', img: 'assets/games/glitch-kids-64.jpg', title: 'GLITCH KIDS 64: Open City',
-      desc: 'Dripwater City in full 64-style 3D! Run, triple-jump and drive anything as Zay, Maya and Bloop, take on 10 missions, beat 4 silly bosses and hunt golden chips. Ages 6-10.', free: 'Free to play', pass: null, exitBottom: true }
+      desc: 'Dripwater City in full 64-style 3D! Run, triple-jump and drive anything as Zay, Maya and Bloop, take on 10 missions, beat 4 silly bosses and hunt golden chips. Ages 6-10.', free: 'Free to play', pass: null, exitBottom: true },
+    { id: 'ridahz-shadow-ops-64', file: 'ridahz-shadow-ops-64.html', img: 'assets/games/ridahz-shadow-ops-64.jpg', title: 'RIDAHZ: Shadow Ops 64',
+      desc: 'An original 64-style first-person spy shooter: Drayke Cross takes on the Hollow King across 6 missions with glowing sci-fi gear, cheats and split-screen co-op. Teen action, no gore.', free: 'Free to play', pass: null, exitBottom: true }
   ];
   var SHOP = [];
   var SHOP_CATS = [
