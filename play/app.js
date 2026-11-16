@@ -83,7 +83,9 @@
     { id: 'zaynyg-world-64', file: 'zaynyg-world-64.html', img: 'assets/games/zaynyg-world-64.jpg', title: 'ZAYNYG WORLD 64: Crossover',
       desc: 'A 3D adventure in classic 64-style: swap between Drayke, Zay, Nova and Auriel, explore 4 worlds, collect Zay Stars and stop the Null Crown. Ages 7+.', free: 'Free to play', pass: null, exitBottom: true },
     { id: 'ridahz-fighters-64', file: 'ridahz-fighters-64.html', img: 'assets/games/ridahz-fighters-64.jpg', title: 'RIDAHZ FIGHTERS 64: Clash of Umbraxis',
-      desc: '3D arena fighter in classic 64-style: 8 Ridahz plus the Hollow King, sidestep, combos and supers. Arcade, 2-player versus and training. Teen action, no gore.', free: 'Free to play', pass: null, exitBottom: true }
+      desc: '3D arena fighter in classic 64-style: 8 Ridahz plus the Hollow King, sidestep, combos and supers. Arcade, 2-player versus and training. Teen action, no gore.', free: 'Free to play', pass: null, exitBottom: true },
+    { id: 'mmm-64', file: 'mmm-64.html', img: 'assets/games/mmm-64.jpg', title: 'MICRO METAMORPHOSIS MACHINES 64',
+      desc: 'Tinkerbrook Unfolded in full 3D! Morph between vehicle, warrior and walk-in playset, team up all 6 Sparkfriends, win 9 missions, beat 3 bosses and bring color back to town. Ages 6-10.', free: 'Free to play', pass: null, exitBottom: true }
   ];
   var SHOP = [];
   var SHOP_CATS = [
