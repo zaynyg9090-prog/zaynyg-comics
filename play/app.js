@@ -85,7 +85,9 @@
     { id: 'ridahz-fighters-64', file: 'ridahz-fighters-64.html', img: 'assets/games/ridahz-fighters-64.jpg', title: 'RIDAHZ FIGHTERS 64: Clash of Umbraxis',
       desc: '3D arena fighter in classic 64-style: 8 Ridahz plus the Hollow King, sidestep, combos and supers. Arcade, 2-player versus and training. Teen action, no gore.', free: 'Free to play', pass: null, exitBottom: true },
     { id: 'mmm-64', file: 'mmm-64.html', img: 'assets/games/mmm-64.jpg', title: 'MICRO METAMORPHOSIS MACHINES 64',
-      desc: 'Tinkerbrook Unfolded in full 3D! Morph between vehicle, warrior and walk-in playset, team up all 6 Sparkfriends, win 9 missions, beat 3 bosses and bring color back to town. Ages 6-10.', free: 'Free to play', pass: null, exitBottom: true }
+      desc: 'Tinkerbrook Unfolded in full 3D! Morph between vehicle, warrior and walk-in playset, team up all 6 Sparkfriends, win 9 missions, beat 3 bosses and bring color back to town. Ages 6-10.', free: 'Free to play', pass: null, exitBottom: true },
+    { id: 'glitch-kids-64', file: 'glitch-kids-64.html', img: 'assets/games/glitch-kids-64.jpg', title: 'GLITCH KIDS 64: Open City',
+      desc: 'Dripwater City in full 64-style 3D! Run, triple-jump and drive anything as Zay, Maya and Bloop, take on 10 missions, beat 4 silly bosses and hunt golden chips. Ages 6-10.', free: 'Free to play', pass: null, exitBottom: true }
   ];
   var SHOP = [];
   var SHOP_CATS = [
