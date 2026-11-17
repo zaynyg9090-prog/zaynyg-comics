@@ -91,7 +91,9 @@
     { id: 'ridahz-shadow-ops-64', file: 'ridahz-shadow-ops-64.html', img: 'assets/games/ridahz-shadow-ops-64.jpg', title: 'RIDAHZ: Shadow Ops 64',
       desc: 'An original 64-style first-person spy shooter: Drayke Cross takes on the Hollow King across 6 missions with glowing sci-fi gear, cheats and split-screen co-op. Teen action, no gore.', free: 'Free to play', pass: null, exitBottom: true },
     { id: 'ridahz-of-darkness-64', file: 'ridahz-of-darkness-64.html', img: 'assets/games/ridahz-of-darkness-64.jpg', title: 'RIDAHZ OF DARKNESS 64: Road to the Light',
-      desc: 'The Road to the Light in full 64-style 3D: triple jumps, wall kicks and long jumps as Drayke, Juno-7, Auriel and Vexa-3, 24 Dawnstars, Nightfall and Dawnbreaker races, and the Hollow King finale. Teen action, no gore.', free: 'Free to play', pass: null, exitBottom: true }
+      desc: 'The Road to the Light in full 64-style 3D: triple jumps, wall kicks and long jumps as Drayke, Juno-7, Auriel and Vexa-3, 24 Dawnstars, Nightfall and Dawnbreaker races, and the Hollow King finale. Teen action, no gore.', free: 'Free to play', pass: null, exitBottom: true },
+    { id: 'glitch-kids-128', file: 'glitch-kids-128.html', img: 'assets/games/glitch-kids-128.jpg', title: 'GLITCH KIDS 128: Portal City',
+      desc: 'Flush through the toilet portal into a whole new world! Drive any ride across 6 districts, race, deliver, rescue Glitchlings, hunt 40 Portal Chips and unclog the portal home. Day and night, ages 6-10.', free: 'Free to play', pass: null, exitBottom: true }
   ];
   var SHOP = [];
   var SHOP_CATS = [
