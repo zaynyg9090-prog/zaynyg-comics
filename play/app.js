@@ -93,7 +93,9 @@
     { id: 'ridahz-of-darkness-64', file: 'ridahz-of-darkness-64.html', img: 'assets/games/ridahz-of-darkness-64.jpg', title: 'RIDAHZ OF DARKNESS 64: Road to the Light',
       desc: 'The Road to the Light in full 64-style 3D: triple jumps, wall kicks and long jumps as Drayke, Juno-7, Auriel and Vexa-3, 24 Dawnstars, Nightfall and Dawnbreaker races, and the Hollow King finale. Teen action, no gore.', free: 'Free to play', pass: null, exitBottom: true },
     { id: 'glitch-kids-128', file: 'glitch-kids-128.html', img: 'assets/games/glitch-kids-128.jpg', title: 'GLITCH KIDS 128: Portal City',
-      desc: 'Flush through the toilet portal into a whole new world! Drive any ride across 6 districts, race, deliver, rescue Glitchlings, hunt 40 Portal Chips and unclog the portal home. Day and night, ages 6-10.', free: 'Free to play', pass: null, exitBottom: true }
+      desc: 'Flush through the toilet portal into a whole new world! Drive any ride across 6 districts, race, deliver, rescue Glitchlings, hunt 40 Portal Chips and unclog the portal home. Day and night, ages 6-10.', free: 'Free to play', pass: null, exitBottom: true },
+    { id: 'destiny-of-dragons-128', file: 'destiny-of-dragons-128.html', img: 'assets/games/destiny-of-dragons-128.jpg', title: 'DESTINY OF DRAGONS 128: Dee Dee & Roxxie',
+      desc: 'Based on the book by Dee Dee & Roxxie Quinones! Explore an island city as two dragon-sister heroes, borrow any car or moto, race the rainforest, collect 40 Jade Scales and ride Luna and Sol the dragons. 12 chapters, Easy/Normal/Hard, ages 7+.', free: 'Free to play', pass: null, exitBottom: true }
   ];
   var SHOP = [];
   var SHOP_CATS = [
